@@ -14,3 +14,99 @@ If you make changes to the content, all you need is to kill the container and ru
 Live-reload is not supported.
 
 The content is built using Antora, a static site generator for creating documentation sites from AsciiDoc documents.
+
+Here's a dump list of the vars provided by AgnosticD at the time of this writing:
+
+|===
+| Variable Name | Example Value
+
+| lab_name
+| I'm the lab_name var
+
+| release-version
+| master
+
+| page-pagination
+| true
+
+| my_var
+| foo
+
+| guid
+| 6psq2
+
+| ssh_user
+| devops
+
+| ssh_password
+| devops
+
+| ssh_command
+| ssh devops@bastion.{guid}.example.opentlc.com
+
+| bastion_public_hostname
+| test_hostname
+
+| bastion_ssh_password
+| test_password
+
+| bastion_ssh_user_name
+| test_user_name
+
+| codeserver_password
+| openshift
+
+| codeserver_url
+| https://codeserver-url.com
+
+| gitea_admin_password
+| gitea
+
+| gitea_admin_username
+| gitea
+
+| gitea_console_url
+| https://gitea-url.com
+
+| openshift_api_server_url
+| https://openshift-url:6443
+
+| openshift_api_url
+| https://openshift-url:6443
+
+| openshift_client_download_url
+| http://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.14.10/openshift-client-linux-4.14.10.tar.gz
+
+| openshift_cluster_admin_password
+| password
+
+| openshift_cluster_admin_username
+| admin
+
+| openshift_cluster_console_url
+| https://openshift-url.com
+
+| openshift_cluster_ingress_domain
+| apps.openshift.com
+
+| openshift_cluster_num_users
+| 1
+
+| openshift_cluster_user_base
+| user
+
+| openshift_cluster_user_count
+| 1
+
+| openshift_cluster_user_name
+| user1
+
+| openshift_cluster_user_password
+| openshift
+
+| openshift_console_url
+| https://openshift-url.com
+
+| openshift_gitops_server
+| https://openshift-gitops-url.com
+|===
