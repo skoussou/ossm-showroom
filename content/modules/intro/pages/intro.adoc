@@ -1,0 +1,24 @@
+# Heading to Production Lab Scenario
+
+## ABOUT THIS LAB
+
+This lab will take you through the use case of the _Travel Agency_ organization which intends to utilize Service Mesh for its _Travel Demo_ application. You will be introduced to techniques of designing a mesh based on real stakeholder requirements and delivering against those from development all the way to production. In addition, it introduces a set of corporate personas with responsibilities and permissions to create and operate the mesh.
+
+
+## Lab assets
+
+Before you begin, access your link:https://codeserver-codeserver-%LAB_PARTICIPANT_ID%.%OCP_DOMAIN%[code-server environment] and ensure you have access to the lab assets `ossm-labs`.
+
+Open a terminal (*`Terminal`* -> *`New Terminal`* from the menu) in the _code-server_ so that you can execute the commands during the labs.
+
+Although for the labs the assets are made available you can additionally get and inspect these resources at a later stage from the link:https://github.com/redhat-gpte-devopsautomation/ossm-labs[ossm-labs] github repository.
+
+## Use of correct Openshift Namespaces
+
+[IMPORTANT]
+====
+You will be using a shared cluster and the Service Mesh users are also common with access to multiple namespaces. Therefore, it is very important each participant uses their allocated namespaces. In order to make use of the correct *namespaces* make sure you are accessing those with the allocate user id *%LAB_PARTICIPANT_ID%*
+====
+
+
+

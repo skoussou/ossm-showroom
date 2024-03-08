@@ -1,0 +1,7 @@
+# Designing Service Mesh Perimeter and Operating Model
+
+## Congratulations on completing this module!
+
+In the next scenario you will be setting up the development environment and verifying it with the Service Mesh provided observability stack.
+
+

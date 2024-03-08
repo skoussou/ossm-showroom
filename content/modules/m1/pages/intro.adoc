@@ -1,0 +1,6 @@
+# Designing Service Mesh Perimeter and Operating Model
+
+## ABOUT THIS LAB
+
+In this first lab scenario we will understand how requirements affect considerations for the introduction of a Service Mesh as well as the involved personas and their responsibilities from the fictive Travel Agency company.
+

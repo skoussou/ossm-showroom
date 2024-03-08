@@ -1,0 +1,5 @@
+# Heading to Production Lab Scenario
+
+## Congratulations on completing this module!
+
+Continue now to _Designing Service Mesh Perimeter and Operating Model_ for the Travel Demo application.

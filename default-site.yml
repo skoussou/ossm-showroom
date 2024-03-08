@@ -1,8 +1,8 @@
 ---
 site:
-  title: Showroom Template Demo
+  title:  Heading to Production with OSSM Lab Guides
   url: https://redhat-scholars.github.io/course-template
-  start_page: modules::index.adoc
+  start_page: ossm-labs-guides:intro:intro.adoc
 
 content:
   sources:

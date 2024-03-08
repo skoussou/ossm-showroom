@@ -1,0 +1,6 @@
+# Service Mesh Development Environment & Observability Stack
+
+## Congratulations on completing this module!
+
+Congratulations! You have completed Scenario 2.
+Now that you have verified the Development environment with the different users and roles, you will proceed to install the production environment.

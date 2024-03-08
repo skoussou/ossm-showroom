@@ -1,0 +1,37 @@
+# Service Mesh Development Environment
+
+== Part I: Installing the Development environment
+
+[IMPORTANT]
+====
+*You do not have to execute anything in this part of the lab* as lab instructors have *pre-setup all the required assets for the Travel Agency development environment*, including users, roles, namespaces, apps, service mesh etc. You will create the PROD environment step-by-step in the next scenario. You can inspect at the end of the lab the installation of the development environment by exploring the `ArgoCD` resources used to link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/tree/helm/helm/ossm/templates/dev[Install & Setup the Development Environment]
+
+Reading the following is totally optional (you are urged to move to _Part II_ as soon as possible) as we only briefly describe the steps the xref:m1:walkthrough.adoc#_travel_agency_personas_roles[Travel Agency Personas] would have had to follow in order to deliver such a development environment:
+====
+
+=== Actions with role Cluster Admin
+
+1. As openshift administrator (role: `Cluster Admin`) add the `Service Mesh` operators in the OCP Cluster
+2. As openshift administrator (role: `Cluster Admin`) once the operators have been successfully installed, create the necessary _Travel Agency_ Namespaces
+3. As openshift administrator (role: `Cluster Admin`) create the `Service Mesh Roles`
+4. As openshift administrator (role: `Cluster Admin`) create the Service Mesh Users and assign Roles
+
+=== Actions with role Mesh Operator
+
+1. As *emma* (role: `Mesh Operator`) create the `Service Mesh` controlplane namespaces and the `ServiceMeshControlPlane (SMCP)` resource.
+
+=== Actions with role Mesh Developer
+
+1. As *farid* (role: `Mesh Developer`) _Travel Services Domain Owner (Tech Lead)_
+** Onboard namespace `dev-travel-agency` to Service Mesh `dev-basic` by adding a `ServiceMeshMember` (`SMM`) resource in `dev-travel-agency`.
+** Deploy the Applications in `dev-travel-agency` namespaces
+
+2. As *cristina* (role: `Mesh Developer`) _Travel Portal Domain Owner (Tech Lead)_
+** Onboard namespaces `dev-travel-control` and `dev-travel-portal` to Service Mesh `dev-basic` by adding a `ServiceMeshMember` (`SMM`) resource in each namespace for `dev-basic` membership.
+** Deploy the Applications in `dev-travel-control`, `dev-travel-portal` namespaces and `Istio` configs to expose Service Mesh services.
+
+=== Final Actions with role Mesh Operator
+
+1. As *emma* (role: `Mesh Operator`) create the Istio `Gateway` resource
+
+IMPORTANT: `OSSM` -like Istio- now offers the ability for the injection of an  *_ingress Gateway_* in the dataplane however for the _Travel Agency_ use case the Architects have selected a *_Self-Service(Restricted)_*  xref:m1:walkthrough.adoc#_user_governance_model[User Governance Model] where the `Mesh Operator` will be responsible for ingress/egress resource configurations.
