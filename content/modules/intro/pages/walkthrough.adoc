@@ -15,7 +15,7 @@ endif::[]
 
 == Understanding the existing application
 
-(Note: The sample application we use in this Lab is the _Kiali Travel Demo Tutorial_: https://kiali.io/docs/tutorials/travels/[https://kiali.io/docs/tutorials/travels/])
+(Note: The sample application we use in this Lab is the _Kiali Travel Demo Tutorial_: https://kiali.io/docs/tutorials/travels/[https://kiali.io/docs/tutorials/travels/,window=_blank])
 
 === Travel Portal Domain namespace
 
