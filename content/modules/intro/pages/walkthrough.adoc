@@ -1,4 +1,4 @@
-# Heading to Production Lab Scenario
+# Introduction
 
 ## Travel Demo Use Case
 
