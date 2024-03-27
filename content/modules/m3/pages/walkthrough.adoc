@@ -32,8 +32,8 @@ cd lab-3
 
 You are going to create a basic Service Mesh Control Plane for production. Regarding the Tracing configuration, `Red Hat Openshift Service Mesh (OSSM)` makes the following 2 suggestions on setting up tracing for the production environment. `Option 2`, the _fully customized_ option, has been selected for the production setup.
 
-- Option 1: link:https://docs.openshift.com/container-platform/4.12/service_mesh/v2x/ossm-deploy-production.html#ossm-smcp-prod_ossm-architecture[Production distributed tracing platform deployment (minimal) -  via SMCP Resource]
-- Option 2: link:https://docs.openshift.com/container-platform/4.12/service_mesh/v2x/ossm-reference-jaeger.html#ossm-deploying-jaeger-production_jaeger-config-reference[Production distributed tracing platform deployment (fully customized)]
+- Option 1: link:https://docs.openshift.com/container-platform/4.12/service_mesh/v2x/ossm-deploy-production.html#ossm-smcp-prod_ossm-architecture[Production distributed tracing platform deployment (minimal) -  via SMCP Resource,window=_blank]
+- Option 2: link:https://docs.openshift.com/container-platform/4.12/service_mesh/v2x/ossm-reference-jaeger.html#ossm-deploying-jaeger-production_jaeger-config-reference[Production distributed tracing platform deployment (fully customized),window=_blank]
 
 
 Login as Mesh Operator (credentials: `emma/emma`) and run the `create-prod-smcp-1-tracing.sh` script (follow its output). This will deploy the production `SMCP` resource *`{openshift_cluster_user_name}-production`* and an external fully customized `Jaeger` instance in your lab user's Service Mesh controlplane namespace *`{openshift_cluster_user_name}-prod-istio-system`*.
@@ -149,16 +149,18 @@ Login to the Openshift console with Mesh Operator credentials `emma/emma` and na
 
 image::03-prod-istio-system.png[]
 
-NOTE: The configs came from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/create-prod-smcp-1-tracing.sh[create-prod-smcp-1-tracing.sh] script which you can inspect for details.
+NOTE: The configs came from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/create-prod-smcp-1-tracing.sh[create-prod-smcp-1-tracing.sh,window=_blank] script which you can inspect for details.
 
 == Task 3: Add the Application Namespaces to the Production Mesh and create the Deployments
 
 In this task you will add the application namespaces to our newly created Service Mesh by specifying `ServiceMeshMember` resources and deploying the corresponding applications for production. You will also configure the applications for the usage within the Service Mesh by specifying two `sidecar` containers:
 
 1. `istio-proxy` sidecar container: used to proxy all communications in/out of the main application container and apply `Service Mesh` configurations
-2. `jaeger-agent` sidecar container: The `Service Mesh` documentation link:https://docs.openshift.com/container-platform/4.11/service_mesh/v2x/ossm-reference-jaeger.html#distr-tracing-deployment-best-practices_jaeger-config-reference[Jaeger Agent Deployment Best Practices] mentions the options of deploying `jaeger-agent` as sidecar or as `DaemonSet`. In order to allow `multi-tenancy` in this Openshift cluster the former has been selected.
+2. `jaeger-agent` sidecar container: The `Service Mesh` documentation link:https://docs.openshift.com/container-platform/4.11/service_mesh/v2x/ossm-reference-jaeger.html#distr-tracing-deployment-best-practices_jaeger-config-reference[Jaeger Agent Deployment Best Practices,window=_blank] mentions the options of deploying `jaeger-agent` as sidecar or as `DaemonSet`. In order to allow `multi-tenancy` in this Openshift cluster the former has been selected.
 
 All application `Deployment`(s) will be patched as follows to include the sidecars (*Warning:* Don't apply as the script `deploy-travel-services-domain.sh` further down will do so):
+
+[source,shell,subs=attributes]
 ----
 oc patch deployment/voyages -p '{"metadata":{"annotations":{"sidecar.jaegertracing.io/inject": " {openshift_cluster_user_name}-jaeger-small-production"}}}' -n $ENV-travel-portal
 oc patch deployment/voyages -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n $ENV-travel-portal
@@ -176,7 +178,7 @@ Now let's get started.
 +
 The result of this command should look similar to this:
 +
-[source,shell,subs=attributes,role=execute]
+[source,shell,subs=attributes]
 ----
 {
   "kubernetes.io/metadata.name": "{openshift_cluster_user_name}-prod-travel-agency"
@@ -194,7 +196,7 @@ The result of this command should look similar to this:
 +
 The result of this command should look similar to this (you may need to retry a few times until all labels are applied):
 +
-[source,shell,subs=attributes,role=execute]
+[source,shell,subs=attributes]
 ----
 {
   "kiali.io/member-of": "{openshift_cluster_user_name}-prod-istio-system",
@@ -268,7 +270,7 @@ In order to achieve that,
 * create on Openshift passthrough route forwarding traffic to the Istio ingress Gateway
 * create an Istio Gateway Resource configured with our TLS certificate
 
-Right now if you login to the *production* link:https://kiali-{openshift_cluster_user_name}-prod-istio-system.{openshift_cluster_ingress_domain}/[Kiali Dashboard] with the user `emma/emma` (*Istio Config* -> filter by `VirtualService`) , there is an issue in the `VirtualService` resource `control` and an error on Kiali as no `Gateway` exists yet.
+Right now if you login to the *production* link:https://kiali-{openshift_cluster_user_name}-prod-istio-system.{openshift_cluster_ingress_domain}/[Kiali Dashboard,window=_blank] with the user `emma/emma` (*Istio Config* -> filter by `VirtualService`) , there is an issue in the `VirtualService` resource `control` and an error on Kiali as no `Gateway` exists yet.
 
 image::03-no-gw-for-travel-control-ui-vs.png[]
 
@@ -280,7 +282,7 @@ Login as Mesh Operator (credentials `emma/emma`) and execute the following scrip
 ./create-https-ingress-gateway.sh prod-istio-system {openshift_cluster_ingress_domain} {openshift_cluster_user_name}
 ----
 
-NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/create-https-ingress-gateway.sh[create-https-ingress-gateway.sh] script which you can inspect for details.
+NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/create-https-ingress-gateway.sh[create-https-ingress-gateway.sh,window=_blank] script which you can inspect for details.
 
 After finishing, the script above, you'll get the exposed URL Route and the `Travel Control Dashboard` should be accessible at https://travel-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain} and the `Kiali` error on the `VirtualService` resource `control` should now have been resolved.
 
@@ -300,7 +302,7 @@ a. Deploy an additional `Prometheus Operator` in `prod-istio-system`
 b. Deploy a `StatefulSet` based `Prometheus` resource with 2 replicas
 c. Configure the prometheus replicas to monitor the components in `prod-istio-system` and all dataplane namespaces.
 Option 3: Integrate with Openshift `Monitoring` Stack::
-With this option only the `dataplane` metrics (`istio-proxy` and business container) are collected. These will be scraped by the Openshift Monitoring Stack's Prometheus and the changes required on the service mesh are described in link:https://access.redhat.com/solutions/6958679[How to configure user-workload to monitor ServiceMesh application in Openshift 4].
+With this option only the `dataplane` metrics (`istio-proxy` and business container) are collected. These will be scraped by the Openshift Monitoring Stack's Prometheus and the changes required on the service mesh are described in link:https://access.redhat.com/solutions/6958679[How to configure user-workload to monitor ServiceMesh application in Openshift 4,window=_blank].
 Option 4: Integrate with an external `Monitoring` Tool::
 This option assumes that another tool like Datadog is used by the Operations team to collect metrics. In order to achieve this:
 
@@ -315,7 +317,7 @@ For the purpose of this lab you will deliver *Option 1* in the production setup.
 ./update-prod-smcp-2-prometheus.sh {openshift_cluster_user_name}-prod-istio-system
 ----
 
-NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/update-prod-smcp-2-prometheus.sh[update-prod-smcp-2-prometheus.sh] script which you can inspect for details.
+NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/update-prod-smcp-2-prometheus.sh[update-prod-smcp-2-prometheus.sh,window=_blank] script which you can inspect for details.
 
 
 == Task 6: Final Production Configuration
@@ -349,4 +351,4 @@ To apply the final production `SMCP` tuning, login as Mesh operator (credentials
 ./update-prod-smcp-3-final.sh {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_user_name}-production {openshift_cluster_user_name}-jaeger-small-production
 ----
 
-NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/update-prod-smcp-3-final.sh[update-prod-smcp-3-final.sh] script which you can inspect for details.
+NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/update-prod-smcp-3-final.sh[update-prod-smcp-3-final.sh,window=_blank] script which you can inspect for details.
