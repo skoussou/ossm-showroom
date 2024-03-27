@@ -8,16 +8,21 @@ As this is a multi-tenant cluster you should restrict use for this lab to the fo
 
 Export the following in a terminal in your link:https://codeserver-codeserver-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain}[code-server environment].
 
-* export CLUSTER_API={openshift_api_server_url}
-* export LAB_PARTICIPANT_ID={openshift_cluster_user_name}
-* export OCP_DOMAIN={openshift_cluster_ingress_domain}
-* export SSO_CLIENT_SECRET=bcd06d5bdd1dbaaf81853d10a66aeb989a38dd51
+[source,shell,subs=attributes,role=execute]
+----
+export CLUSTER_API={openshift_api_server_url}
+export LAB_PARTICIPANT_ID={openshift_cluster_user_name}
+export OCP_DOMAIN={openshift_cluster_ingress_domain}
+export SSO_CLIENT_SECRET=bcd06d5bdd1dbaaf81853d10a66aeb989a38dd51
+----
 ====
 
 
 [NOTE]
 ====
 If you are running out of time and wish to complete the following lab sections in a single step execute
+
+[source,shell,subs=attributes,role=execute]
 ----
 cd lab-5
 ./complete-lab-5.sh $SSO_CLIENT_SECRET {openshift_cluster_ingress_domain} {openshift_cluster_user_name}
@@ -28,7 +33,7 @@ cd lab-5
 
 The Travel Agency company, like any other business, requires fine-grained _authorization_ policies for its systems. Openshift Service Mesh provides the capability to externalize these policies from the actual service code and the _Travel Agency_ `Mesh Operator` will implement them restricting access based on known _Best Practices_ and business requirements.
 
-Further authorization capabilities are described in the `Istio` link:https://istio.io/latest/docs/tasks/security/authorization/[authorization documentation].
+Further authorization capabilities are described in the `Istio` link:https://istio.io/latest/docs/tasks/security/authorization/[authorization documentation,window=_blank].
 
 === Step 1 - Verify current default AUTHZ is `ALLOW` all
 The _Service Mesh_ default Authz policy is `ALLOW` all.
@@ -54,7 +59,7 @@ First lets verify that by default the _Service Mesh_ authorization policies allo
 
 Verify the default communication paths described in the table above. Login as Mesh Operator (credentials `emma/emma`) and execute the following script:
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 cd lab-5
 ./login-as.sh emma
@@ -68,7 +73,7 @@ In the previous lab xref:m4:walkthrough.adoc#_step_1__define_authentication_and_
 
 As Mesh Operator with `emma/emma`  apply the `default-deny` pattern to the prod-travel-agency namespace
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 echo "apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -81,7 +86,7 @@ spec:
 
 and the prod-travel-control namespace:
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 echo "apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -115,7 +120,7 @@ Now you can verify that no communications from the _Service Mesh_ are authorizat
 
 Let us check the communication paths again:
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 ./check-authz-all.sh DENY {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_ingress_domain} $SSO_CLIENT_SECRET {openshift_cluster_user_name}
 ----
@@ -130,18 +135,23 @@ After applying the DENY ALL policies, authorize access only to the required path
 
 Let us first login as Mesh Operator with `emma/emma` and check if you can access the Travel Dashboard. This should return a RBAC Access Denied error.
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh emma
 
 curl -k https://travel-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain}/
+----
 
+The result should be:
+
+[source,shell,subs=attributes]
+----
 RBAC: access denied
 ----
 
 Now create the following AuthorizationPolicies:
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 echo "apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -160,7 +170,7 @@ spec:
 
 and
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 echo "apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -177,7 +187,7 @@ spec:
 
 Please verify the access to the Travel Dashboard again. It should be accessible right now. You can also open the URL in your Browser:
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 curl -k https://travel-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain}/
 ----
@@ -197,7 +207,7 @@ In this last step, you will create authorisation policies which will allow acces
 
 Login as Mesh Developer with `farid/farid` and create the following AuthorizationPolicy:
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh farid
 
@@ -217,7 +227,7 @@ spec:
 
 Verify all communications meet the fine-grained authorization targets set by the Travel Agency
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh emma
 
@@ -257,14 +267,17 @@ Although, it is not necessary for our use case to do so if at the end of the lab
 
 First login as Mesh Developer with `farid/farid` and check the global mTLS configurations in the control plane namespace:
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 cd lab-5
 
 ./login-as.sh farid
 
 oc get peerauthentication -n {openshift_cluster_user_name}-prod-istio-system
+----
 
+[source,shell,subs=attributes]
+----
 NAME                            MODE         AGE
 default                         STRICT       4d1h
 disable-mtls-jaeger-collector   DISABLE      4d1h
@@ -275,7 +288,7 @@ grafana-ports-mtls-disabled     PERMISSIVE   4d1h
 
 Then disable strict _MTLS_ for the cars service by applying a PeerAuthentication resource in the applications namespace:
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 echo "apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
@@ -292,10 +305,13 @@ spec:
 
 Check the applied resource
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 oc get peerauthentication -n {openshift_cluster_user_name}-prod-travel-agency
+----
 
+[source,shell,subs=attributes]
+----
 NAME                MODE      AGE
 cars-mtls-disable   DISABLE   47s
 ----
@@ -304,7 +320,7 @@ cars-mtls-disable   DISABLE   47s
 
 Validate no mTLS handshaking is taking place, by connecting to the cars service.
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 oc exec "$(oc get pod -l app=travels -n {openshift_cluster_user_name}-prod-travel-agency -o jsonpath={.items..metadata.name})" -c istio-proxy -n {openshift_cluster_user_name}-prod-travel-agency -- openssl s_client -showcerts -connect $(oc -n {openshift_cluster_user_name}-prod-travel-agency get svc cars -o jsonpath={.spec.clusterIP}):8000
 ----
@@ -313,7 +329,7 @@ oc exec "$(oc get pod -l app=travels -n {openshift_cluster_user_name}-prod-trave
 
 Clean up the `PeerAuthentication` and re-run the above command to verify the mTLS configuration has been reinstated.
 
-[source,shell]
+[source,shell,subs=attributes,role=execute]
 ----
 oc delete peerauthentication cars-mtls-disable -n {openshift_cluster_user_name}-prod-travel-agency
 ----

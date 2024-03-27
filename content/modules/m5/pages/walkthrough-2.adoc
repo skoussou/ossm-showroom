@@ -10,8 +10,9 @@ Firstly you will create a custom CA and then with it an Intermediate CA (normall
 
 * You must be in the directory of *_lab-5_* and provide to the following script the full path for this directory in your local system:
 +
+[source,shell,subs=attributes,role=execute]
 ----
-./create-corporate-intermediate-certs.sh /<YOUR-PATH>/lab-5
+./create-corporate-intermediate-certs.sh /YOUR-PATH/lab-5
 ----
 
 * Follow the above scripts output and in the _verification_ parts verify that:
@@ -39,6 +40,7 @@ The current _controlplane_ and _dataplane_ certificates are issued by default `I
 
 * Check the issuer of the default service mesh certificate (it should be something like `Issuer: O = cluster.local`)
 +
+[source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh emma
 oc get -o yaml secret istio-ca-secret -n {openshift_cluster_user_name}-prod-istio-system | grep ca-cert | awk '{print $2}' | base64 -d | openssl x509 -noout -text
@@ -46,25 +48,28 @@ oc get -o yaml secret istio-ca-secret -n {openshift_cluster_user_name}-prod-isti
 
 * Check the certificates used in the communication with `istiod`, the Issuer is again `Issuer=O = cluster.local`
 +
+[source,shell,subs=attributes,role=execute]
 ----
 oc exec "$(oc get pod -l app=istio-ingressgateway -n {openshift_cluster_user_name}-prod-istio-system -o jsonpath={.items..metadata.name} | awk '{print $1}')" -c istio-proxy -n {openshift_cluster_user_name}-prod-istio-system -- openssl s_client -showcerts -connect $(oc get svc istiod-{openshift_cluster_user_name}-production -o jsonpath={.spec.clusterIP}):15012
 ----
 
 * Checking the certificates used in the POD to POD communications, the Issuer is again `Issuer=O = cluster.local`
 +
+[source,shell,subs=attributes,role=execute]
 ----
 oc exec "$(oc get pod -l app=travels -n {openshift_cluster_user_name}-prod-travel-agency -o jsonpath={.items..metadata.name})" -c istio-proxy -n {openshift_cluster_user_name}-prod-travel-agency -- openssl s_client -showcerts -connect $(oc -n {openshift_cluster_user_name}-prod-travel-agency get svc cars -o jsonpath={.spec.clusterIP}):8000
 ----
 
 === Step 3: Modify the `production` SMCP tenant to use the corporate based CA, Intermediate CA and chain certificates
 
-The link:https://docs.openshift.com/container-platform/4.12/service_mesh/v2x/ossm-security.html#ossm-cert-manage-add-cert-key_ossm-security[documentation] instructs to create a secret named `cacert` that includes the input files `ca-cert.pem`, `ca-key.pem`, `root-cert.pem` and `cert-chain.pem`. Based on the files you generated the equivalent are:
+The link:https://docs.openshift.com/container-platform/4.12/service_mesh/v2x/ossm-security.html#ossm-cert-manage-add-cert-key_ossm-security[documentation,window=_blank] instructs to create a secret named `cacert` that includes the input files `ca-cert.pem`, `ca-key.pem`, `root-cert.pem` and `cert-chain.pem`. Based on the files you generated the equivalent are:
 
 * `intermediate.cert.pem` (`ca-cert.pem`). the certificate for the intermediate ca
 * `intermediate.key.pem` (`ca-key.pem`). the key for the intermediate ca certificate
 * `ca.cert.pem` (`root-cert.pem`): the root ca certificate
 * `ca-chain.cert.pem` (`cert-chain.pem`)the certificate chain that includes both certificates
 +
+[source,shell,subs=attributes,role=execute]
 ----
 oc create secret generic cacerts -n {openshift_cluster_user_name}-prod-istio-system \
 --from-file=ca-cert.pem=certs-resources/intermediate/certs/intermediate.cert.pem \
@@ -75,6 +80,7 @@ oc create secret generic cacerts -n {openshift_cluster_user_name}-prod-istio-sys
 
 * Remove the `istio-system-ca` secret created as default CA by OSSM as it interferes with the istiod correctly picking the enterprise certificates from the newly created `cacerts` secret
 +
+[source,shell,subs=attributes,role=execute]
 ----
 oc get  secret istio-ca-secret -n {openshift_cluster_user_name}-prod-istio-system -o yaml > istio-ca-secret-default.yaml
 oc delete secret istio-ca-secret -n {openshift_cluster_user_name}-prod-istio-system
@@ -82,10 +88,16 @@ oc delete secret istio-ca-secret -n {openshift_cluster_user_name}-prod-istio-sys
 
 * Logged in as `Mesh Operator` (credentials `emma`/`emma`) add to the `ServiceMeshControlPlane` resource `{openshift_cluster_user_name}-production` under `security` section the `certificateAuthority` properties as shown in the following example (make sure the indentation is correct). Service Mesh reads the certificates and key from the secret-mount files.
 +
+[source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh emma
 oc edit smcp/{openshift_cluster_user_name}-production -n {openshift_cluster_user_name}-prod-istio-system
-
+----
++
+Edit the file as follows:
++
+[source,yaml,subs=attributes]
+----
 # Add in production SMCP under the existing _security_ section the followng:
 
   security:
@@ -100,29 +112,38 @@ oc edit smcp/{openshift_cluster_user_name}-production -n {openshift_cluster_user
 * Restart _controlplane_ and _dataplane_ resources to force new certificate utilization
 ** After adding the corporate the certificates, the control plane istiod and gateway pods must be restarted so the changes go into effect. Use the following command to restart the pods(The Operator will automatically recreate the pods after they have been deleted):
 +
+[source,shell,subs=attributes,role=execute]
 ----
 oc -n {openshift_cluster_user_name}-prod-istio-system delete pods -l "app in (istiod,istio-ingressgateway, istio-egressgateway,gto-{openshift_cluster_user_name}-ingressgateway)"
 oc -n {openshift_cluster_user_name}-prod-istio-system get pods
 ----
 ** Restart the _dataplane_ pods to expedite the sidecar proxies picking up the secret changes.
-
-    oc -n {openshift_cluster_user_name}-prod-travel-control delete pods --all
-    oc -n {openshift_cluster_user_name}-prod-travel-agency delete pods --all
-    oc -n {openshift_cluster_user_name}-prod-travel-portal delete pods --all
++
+[source,shell,subs=attributes,role=execute]
+----
+oc -n {openshift_cluster_user_name}-prod-travel-control delete pods --all
+oc -n {openshift_cluster_user_name}-prod-travel-agency delete pods --all
+oc -n {openshift_cluster_user_name}-prod-travel-portal delete pods --all
+----
 
 
 * Finally, perform some verifications of the new certificates being in effect
 ** Identify the `cacerts` Issuer (it should be `C = GB, ST = England, L = London, O = Travel Agency Ltd, OU = Certificate Authority, CN = www.travelagency.com, emailAddress = ca@www.travelagency.com`)
 +
+[source,shell,subs=attributes,role=execute]
 ----
 oc get -o yaml secret cacerts -n {openshift_cluster_user_name}-prod-istio-system | grep ca-cert | awk '{print $2}' | base64 -d | openssl x509 -noout -text
 ----
 ** Verify the _dataplane_ communications are secured with the new corporate certificates
 +
+[source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh emma
 ./verify-dataplane-certs.sh {openshift_cluster_user_name}
-
+----
++
+[source,shell]
+----
 
 ###########################
  CERTS CHECK ON DATAPLANE
@@ -157,12 +178,16 @@ Files /tmp/ca-cert.crt.txt and /tmp/pod-cert-chain-ca.crt.txt are identical
 ------------------------------------------------------
 ./proxy-cert-1.pem: OK
 ----
+
 ** Verify the _controlplane_ communications are secured with the new corporate certificates
 +
+[source,shell,subs=attributes,role=execute]
 ----
 ./verify-controlplane-certs.sh {openshift_cluster_user_name}
-
-
+----
++
+[source,shell,subs=attributes]
+----
 ###########################
 CERTS CHECK ON CONTROLPLANE
 ###########################
