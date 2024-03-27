@@ -2,20 +2,23 @@
 
 == Part II:  Development Environment Verification & Observability Usage
 
-[IMPORTANT]
+[IMPORTANT,subs=attributes]
 ====
 Export the following in a terminal in your link:https://codeserver-codeserver-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain}[code-server environment].
 
-* export CLUSTER_API={openshift_api_server_url}
-* export LAB_PARTICIPANT_ID={openshift_cluster_user_name}
-* export OCP_DOMAIN={openshift_cluster_ingress_domain}
-* export SSO_CLIENT_SECRET=bcd06d5bdd1dbaaf81853d10a66aeb989a38dd51
+[source,shell,subs=attributes,role=execute]
+----
+export CLUSTER_API={openshift_api_server_url}
+export LAB_PARTICIPANT_ID={openshift_cluster_user_name}
+export OCP_DOMAIN={openshift_cluster_ingress_domain}
+export SSO_CLIENT_SECRET=bcd06d5bdd1dbaaf81853d10a66aeb989a38dd51
+----
 ====
 
 === Task 1: Access the Travel Control Dashboard
 * Log in via CLI with user `emma` who has access to `{openshift_cluster_user_name}-dev-istio-system` and get the URL to the application business dashboard. Paste the URL in a Browser to verify that you can reach the *Travel Control Dashboard* .
 
-[source, shell, role=execute]
+[source, shell, role=execute, subs=attributes]
 ----
 ./lab-3/login-as.sh emma
 echo "http://$(oc get route istio-ingressgateway -o jsonpath='{.spec.host}' -n {openshift_cluster_user_name}-dev-istio-system)"
@@ -31,7 +34,7 @@ In this task you will learn how you can find the URLs to the Observability Stack
 
 * Logged in via CLI (we have used user `cristina`/`cristina`) execute the following to retrieve the URLs of the `OSSM` Observability Stack (`Kiali`, `Jaeger`, `Prometheus`, `Grafana`) components. Open the links on a browser and use the preceeding `cristina`'s credentials to login.
 +
-[source, shell, role=execute]
+[source, shell, role=execute, subs=attributes]
 ----
 ./lab-3/login-as.sh cristina
 echo "http://$(oc get route kiali -o jsonpath='{.spec.host}' -n {openshift_cluster_user_name}-dev-istio-system)"
