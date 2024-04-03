@@ -151,6 +151,24 @@ image::03-prod-istio-system.png[]
 
 NOTE: The configs came from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/create-prod-smcp-1-tracing.sh[create-prod-smcp-1-tracing.sh,window=_blank] script which you can inspect for details.
 
+
+As a subtask modify the Red Hat Openshift Console by adding the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-kiali-ossmc-plugin.html[OpenShift Service Mesh Console plugin] to view the production KIALI UI directly from the the Openshift Console *Service Mesh* menu (2-3 minutes and a refresh of the browser is required).
+
+[source,yaml,subs=attributes]
+----
+./login-as.sh emma
+echo "apiVersion: kiali.io/v1alpha1
+kind: OSSMConsole
+metadata:
+  name: ossmconsole
+  namespace: {openshift_cluster_user_name}-prod-istio-system
+spec:
+  version: default
+  kiali:
+    serviceName: 'kiali'
+    serviceNamespace: '{openshift_cluster_user_name}-prod-istio-system'" | oc apply -f -
+----
+
 == Task 3: Add the Application Namespaces to the Production Mesh and create the Deployments
 
 In this task you will add the application namespaces to our newly created Service Mesh by specifying `ServiceMeshMember` resources and deploying the corresponding applications for production. You will also configure the applications for the usage within the Service Mesh by specifying two `sidecar` containers:
