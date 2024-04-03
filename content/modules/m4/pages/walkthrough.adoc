@@ -59,10 +59,6 @@ Verify the creation of the additional gateway either in the OCP Console or with 
 [source,shell,subs=attributes,role=execute]
 ----
 $ oc get pods -n {openshift_cluster_user_name}-prod-travel-agency |grep gto
-gto-{openshift_cluster_user_name}-ingressgateway-5c87989fb7-r9grv
-
-$ oc get routes -n {openshift_cluster_user_name}-prod-travel-agency |grep "ingress"
-gto-{openshift_cluster_user_name}-ingressgateway   gto-{openshift_cluster_user_name}-ingressgateway-{openshift_cluster_user_name}-prod-istio-system.apps.cluster-xvsnq.sandbox2004.opentlc.com          gto-{openshift_cluster_user_name}-ingressgateway        8080                               None
 ----
 
 === Step 2 - Expose and secure via MTLS host on new Gateway
@@ -183,13 +179,13 @@ The `RequestAuthentication` will only check the JWT if it exists in the request.
 
 [source,shell,subs=attributes,role=execute]
 ----
-./login-as.sh emma
+./login-as.sh farid
 
 echo "apiVersion: security.istio.io/v1beta1
 kind: RequestAuthentication
 metadata:
  name: jwt-rhsso-gto-external
- namespace: {openshift_cluster_user_name}-prod-istio-system
+ namespace: {openshift_cluster_user_name}-prod-travel-agency
 spec:
  selector:
    matchLabels:
@@ -205,11 +201,13 @@ Next add an `AuthorizationPolicy` Resource which specifies to only allow request
 
 [source,shell,subs=attributes,role=execute]
 ----
+./login-as.sh farid
+
 echo "apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: authpolicy-gto-external
-  namespace: {openshift_cluster_user_name}-prod-istio-system
+  namespace: {openshift_cluster_user_name}-prod-travel-agency
 spec:
   selector:
     matchLabels:
@@ -232,7 +230,7 @@ spec:
 ----
 ./login-as.sh emma
 
-export GATEWAY_URL=$(oc -n {openshift_cluster_user_name}-prod-istio-system get route gto-{openshift_cluster_user_name} -o jsonpath='{.spec.host}')
+export GATEWAY_URL=$(oc -n {openshift_cluster_user_name}-prod-travel-agency get route gto-{openshift_cluster_user_name} -o jsonpath='{.spec.host}')
 echo $GATEWAY_URL
 echo "------------------------------------------------------------"
 curl -v --cacert ca-root.crt --key curl-client.key --cert curl-client.crt https://$GATEWAY_URL/cars/Tallinn
@@ -255,7 +253,7 @@ echo $TOKEN
 +
 [source,shell,subs=attributes,role=execute]
 ----
-./call-via-mtls-and-jwt-travel-agency-api.sh {openshift_cluster_user_name}-prod-istio-system gto-{openshift_cluster_user_name} $TOKEN
+./call-via-mtls-and-jwt-travel-agency-api.sh {openshift_cluster_user_name}-prod-travel-agency gto-{openshift_cluster_user_name} $TOKEN
 ----
 
 Login to Kiali, go to menu `Graph`, select only namespace `{openshift_cluster_user_name}-prod-istio-system` and verify the traffic is successfully entering the mesh.
