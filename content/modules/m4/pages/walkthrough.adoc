@@ -58,10 +58,10 @@ Verify the creation of the additional gateway either in the OCP Console or with 
 
 [source,shell,subs=attributes,role=execute]
 ----
-$ oc get pods -n {openshift_cluster_user_name}-prod-istio-system |grep gto
+$ oc get pods -n {openshift_cluster_user_name}-prod-travel-agency |grep gto
 gto-{openshift_cluster_user_name}-ingressgateway-5c87989fb7-r9grv
 
-$ oc get routes -n {openshift_cluster_user_name}-prod-istio-system |grep "ingress"
+$ oc get routes -n {openshift_cluster_user_name}-prod-travel-agency |grep "ingress"
 gto-{openshift_cluster_user_name}-ingressgateway   gto-{openshift_cluster_user_name}-ingressgateway-{openshift_cluster_user_name}-prod-istio-system.apps.cluster-xvsnq.sandbox2004.opentlc.com          gto-{openshift_cluster_user_name}-ingressgateway        8080                               None
 ----
 
