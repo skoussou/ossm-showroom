@@ -161,7 +161,7 @@ echo "apiVersion: kiali.io/v1alpha1
 kind: OSSMConsole
 metadata:
   name: ossmconsole
-  namespace: {openshift_cluster_user_name}-prod-istio-system
+  namespace: openshift-operators
 spec:
   version: default
   kiali:
