@@ -76,7 +76,7 @@ In the next step you will expose the new `Gateway` and in order to do this the s
 
 [source,shell,subs=attributes,role=execute]
 ----
-./create-external-mtls-https-ingress-gateway.sh prod-istio-system {openshift_cluster_ingress_domain} {openshift_cluster_user_name}
+./create-external-mtls-https-ingress-gateway.sh prod-travel-agency {openshift_cluster_ingress_domain} {openshift_cluster_user_name}
 ----
 
 You can check the created certs by looking in your current directory:
@@ -120,7 +120,7 @@ As the Travel Services Domain Owner (Tech Lead) you can now enable Istio routing
 [source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh farid
-./deploy-external-travel-api-mtls-vs.sh {openshift_cluster_user_name}-prod {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_user_name}
+./deploy-external-travel-api-mtls-vs.sh {openshift_cluster_user_name}-prod {openshift_cluster_user_name}-prod-travel-agency {openshift_cluster_user_name}
 ----
 
 The script will also run some example requests and if MTLS handshake works you should see something similar to this:
