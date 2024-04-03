@@ -154,7 +154,7 @@ NOTE: The configs came from link:https://github.com/redhat-gpte-devopsautomation
 
 As a subtask modify the Red Hat Openshift Console by adding the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-kiali-ossmc-plugin.html[OpenShift Service Mesh Console plugin] to view the production KIALI UI directly from the the Openshift Console *Service Mesh* menu (2-3 minutes and a refresh of the browser is required).
 
-[source,yaml,subs=attributes]
+[source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh emma
 echo "apiVersion: kiali.io/v1alpha1
