@@ -228,7 +228,7 @@ spec:
 +
 [source,shell,subs=attributes,role=execute]
 ----
-./login-as.sh emma
+./login-as.sh farid
 
 export GATEWAY_URL=$(oc -n {openshift_cluster_user_name}-prod-travel-agency get route gto-{openshift_cluster_user_name} -o jsonpath='{.spec.host}')
 echo $GATEWAY_URL
