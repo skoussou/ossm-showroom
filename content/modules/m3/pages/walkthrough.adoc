@@ -32,8 +32,8 @@ cd lab-3
 
 You are going to create a basic Service Mesh Control Plane for production. Regarding the Tracing configuration, `Red Hat Openshift Service Mesh (OSSM)` makes the following 2 suggestions on setting up tracing for the production environment. `Option 2`, the _fully customized_ option, has been selected for the production setup.
 
-- Option 1: link:https://docs.openshift.com/container-platform/4.12/service_mesh/v2x/ossm-deploy-production.html#ossm-smcp-prod_ossm-architecture[Production distributed tracing platform deployment (minimal) -  via SMCP Resource,window=_blank]
-- Option 2: link:https://docs.openshift.com/container-platform/4.12/service_mesh/v2x/ossm-reference-jaeger.html#ossm-deploying-jaeger-production_jaeger-config-reference[Production distributed tracing platform deployment (fully customized),window=_blank]
+- Option 1: link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-deploy-production.html#ossm-smcp-prod_ossm-architecture[Production distributed tracing platform deployment (minimal) -  via SMCP Resource,window=_blank]
+- Option 2: link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-reference-jaeger.html#ossm-deploying-jaeger-production_jaeger-config-reference[Production distributed tracing platform deployment (fully customized),window=_blank]
 
 
 Login as Mesh Operator (credentials: `emma/emma`) and run the `create-prod-smcp-1-tracing.sh` script (follow its output). This will deploy the production `SMCP` resource *`{openshift_cluster_user_name}-production`* and an external fully customized `Jaeger` instance in your lab user's Service Mesh controlplane namespace *`{openshift_cluster_user_name}-prod-istio-system`*.
@@ -142,8 +142,8 @@ The applied `ServiceMeshControlPlane` Resource ensures that:
 ** *(1)* 20% of all traces (as requested by the developers) will be collected,
 ** *(2)* No external outgoing communications to a host not registered in the mesh will be allowed,
 ** *(3)* `Jaeger` resource will be available in the `Service Mesh` for traces storage,
-** *(4)* It will utilize Elastic Search for persistence of traces (unlike  in the `dev-istio-system` namespace where `memory` is utilized)
-** *(5)* The ` {openshift_cluster_user_name}-jaeger-small-production` external `Jaeger` Resource is integrated by and utilized in the `Service Mesh`.
+** *(4)* It will utilize Elastic Search for persistence of traces (unlike  in the `{openshift_cluster_user_name}-dev-istio-system` namespace where `memory` is utilized)
+** *(5)* The `{openshift_cluster_user_name}-jaeger-small-production` external `Jaeger` Resource is integrated by and utilized in the `Service Mesh`.
 
 Login to the Openshift console with Mesh Operator credentials `emma/emma` and navigate to *`Administrator`* -> *`Workloads`* -> *`Pods`*  in namespace `{openshift_cluster_user_name}-prod-istio-system` namespace. Verify all deployments and pods are running.
 
@@ -152,7 +152,7 @@ image::03-prod-istio-system.png[]
 NOTE: The configs came from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/create-prod-smcp-1-tracing.sh[create-prod-smcp-1-tracing.sh,window=_blank] script which you can inspect for details.
 
 
-As a subtask modify the Red Hat Openshift Console by adding the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-kiali-ossmc-plugin.html[OpenShift Service Mesh Console plugin] to view the production KIALI UI directly from the the Openshift Console *Service Mesh* menu (2-3 minutes and a refresh of the browser is required).
+As a subtask modify the Red Hat Openshift Console by adding the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-kiali-ossmc-plugin.html[OpenShift Service Mesh Console plugin] to view the production Kiali UI embedded directly from the Openshift Console *Service Mesh* menu (2-3 minutes and a refresh of the browser is required). Look for *Service Mesh* menu and look through the graphs, configs etc.
 
 [source,shell,subs=attributes,role=execute]
 ----
@@ -174,13 +174,13 @@ spec:
 In this task you will add the application namespaces to our newly created Service Mesh by specifying `ServiceMeshMember` resources and deploying the corresponding applications for production. You will also configure the applications for the usage within the Service Mesh by specifying two `sidecar` containers:
 
 1. `istio-proxy` sidecar container: used to proxy all communications in/out of the main application container and apply `Service Mesh` configurations
-2. `jaeger-agent` sidecar container: The `Service Mesh` documentation link:https://docs.openshift.com/container-platform/4.11/service_mesh/v2x/ossm-reference-jaeger.html#distr-tracing-deployment-best-practices_jaeger-config-reference[Jaeger Agent Deployment Best Practices,window=_blank] mentions the options of deploying `jaeger-agent` as sidecar or as `DaemonSet`. In order to allow `multi-tenancy` in this Openshift cluster the former has been selected.
+2. `jaeger-agent` sidecar container: The `Service Mesh` documentation link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-reference-jaeger.html#distr-tracing-deployment-best-practices_jaeger-config-reference[Jaeger Agent Deployment Best Practices,window=_blank] mentions the options of deploying `jaeger-agent` as sidecar or as `DaemonSet`. In order to allow `multi-tenancy` in this Openshift cluster the former has been selected.
 
 All application `Deployment`(s) will be patched as follows to include the sidecars (*Warning:* Don't apply as the script `deploy-travel-services-domain.sh` further down will do so):
 
 [source,shell,subs=attributes]
 ----
-oc patch deployment/voyages -p '{"metadata":{"annotations":{"sidecar.jaegertracing.io/inject": " {openshift_cluster_user_name}-jaeger-small-production"}}}' -n $ENV-travel-portal
+oc patch deployment/voyages -p '{"metadata":{"annotations":{"sidecar.jaegertracing.io/inject": " {openshift_cluster_user_name}-jaeger-small-production"}}}' -n {openshift_cluster_user_name}-prod-travel-portal
 oc patch deployment/voyages -p '{"spec":{"template":{"metadata":{"annotations":{"sidecar.istio.io/inject": "true"}}}}}' -n $ENV-travel-portal
 ----
 
@@ -306,9 +306,13 @@ After finishing, the script above, you'll get the exposed URL Route and the `Tra
 
 image::03-Travel-Control-Dashboard-https.png[Travel Control Dashboard]
 
-== Task 5: Configure Prometheus for Production
+== Task 5: Configure monitoring for Production
 
-In order to configure Prometheus for production there are several options:
+Currently, the `mesh operator` deploys and manages all the monitoring addons as part of the link:https://console-openshift-console.{openshift_cluster_ingress_domain}/k8s/ns/{openshift_cluster_user_name}-prod-istio-system/clusterserviceversions/servicemeshoperator.v2.5.0/maistra.io~v2~ServiceMeshControlPlane/{openshift_cluster_user_name}-production[controlplane]. 
+
+image::03-smcp-monitoring-stack.png[]
+
+With a dedicated instance of Prometheus for collecting metrics, the `mesh operator` is responsible to provide resiliency for longterm storage of production metrics by extending the `Openshift Service Mesh Operator`.  There are several options to configure Prometheus to offer storage in production:
 
 Option 1: Create a `PersistenceVolume` for the `SMCP` created `Prometheus` resource::
 With this option the `mesh operator` will enhance the `SMCP` managed `Prometheus Deployment` resource in order to
@@ -320,23 +324,62 @@ a. Deploy an additional `Prometheus Operator` in `prod-istio-system`
 b. Deploy a `StatefulSet` based `Prometheus` resource with 2 replicas
 c. Configure the prometheus replicas to monitor the components in `prod-istio-system` and all dataplane namespaces.
 Option 3: Integrate with Openshift `Monitoring` Stack::
-With this option only the `dataplane` metrics (`istio-proxy` and business container) are collected. These will be scraped by the Openshift Monitoring Stack's Prometheus and the changes required on the service mesh are described in link:https://access.redhat.com/solutions/6958679[How to configure user-workload to monitor ServiceMesh application in Openshift 4,window=_blank].
+With this option metrics will be scraped by the Openshift Monitoring Stack's Prometheus and the changes required on the service mesh are described in link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-observability.html#ossm-integrating-with-user-workload-monitoring_observability[Integrating with user-workload monitoring,window=_blank].
 Option 4: Integrate with an external `Monitoring` Tool::
 This option assumes that another tool like Datadog is used by the Operations team to collect metrics. In order to achieve this:
 
-a. For `controlplane` components metrics collection, the tool needs to be part of the control plane namespace or a `NetworkPolicy` to allow it visibility to those components is required.g
-b. For `dataplane` metrics the same approach described, previously, in _Option 3_ is to be followed.
-
-For the purpose of this lab you will deliver *Option 1* in the production setup. Login as `Mesh Operator` (credentials `emma/emma`), the script below will help you create a `PVC` for Prometheus and update the Prometheus configuration to utilize it and extend metrics retention to `168h`.
+For the purpose of this lab you will deliver *Option 3* in the production setup. Login as `Mesh Operator` (credentials `emma/emma`), the script below will help you create a `PVC` for Prometheus and update the Prometheus configuration to utilize it and extend metrics retention to `168h`.
 
 [source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh emma
-./update-prod-smcp-2-prometheus.sh {openshift_cluster_user_name}-prod-istio-system
+./update-prod-ocp-userworkload-monitoring.sh {openshift_cluster_user_name}
 ----
 
-NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/update-prod-smcp-2-prometheus.sh[update-prod-smcp-2-prometheus.sh,window=_blank] script which you can inspect for details.
+NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/update-prod-ocp-userworkload-monitoring.sh[update-prod-ocp-userworkload-monitoring.sh,window=_blank] script which you can inspect for details.
 
+After a few minutes the new components are up and running and the integration is complete. Now:
+
+* Metrics can be monitored via the Openshift monitoring console (*Observe -> metrics*). Try some of the following metrics (more on link:https://github.com/redhat-developer-demos/ossm-heading-to-production-and-day-2/tree/main/scenario-8-mesh-tuning#what-to-monitor-in-the-data-plane[What to monitor in the data plane,window=_blank] and link:https://github.com/redhat-developer-demos/ossm-heading-to-production-and-day-2/tree/main/scenario-8-mesh-tuning#istiod-metrics-to-monitor[istiod metrics to monitor,window=_blank])):
+
+
+[cols="3,a"]
+|====
+|Metric Purpose | Metric Query
+| monitoring client latency averaged over the past minute by source and destination service names and namespace
+|
+[source, yaml]
+----
+histogram_quantile(0.95,
+  sum(irate(istio_request_duration_milliseconds_bucket{reporter="source"}[1m]))
+  by (
+    destination_canonical_service,
+    destination_workload_namespace,
+    source_canonical_service,
+    source_workload_namespace,
+    le
+  )
+)
+----
+
+| monitoring for unsuccessful responses (or in absence try 200)
+|
+[source, yaml]
+----
+istio_request_duration_milliseconds_bucket{response_code="503"}
+istio_request_duration_milliseconds_bucket{response_code="400"}
+istio_request_duration_milliseconds_bucket{response_code="200"}
+----
+
+| monitor the time it takes for pilot to push new configurations to Envoy proxies (in milliseconds)
+|
+[source, yaml]
+----
+increase(pilot_proxy_convergence_time_sum[30m])/increase(pilot_proxy_convergence_time_count[30m])
+----
+|====
+
+* Furthermore, Kiali console is still showing traces and metrics with the latter retrieved from Openshift monitoring stack.
 
 == Task 6: Final Production Configuration
 
