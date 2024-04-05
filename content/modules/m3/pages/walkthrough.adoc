@@ -343,7 +343,7 @@ After a few minutes the new components are up and running and the integration is
 * Metrics can be monitored via the Openshift monitoring console (*Observe -> metrics*). Try some of the following metrics (more on link:https://github.com/redhat-developer-demos/ossm-heading-to-production-and-day-2/tree/main/scenario-8-mesh-tuning#what-to-monitor-in-the-data-plane[What to monitor in the data plane,window=_blank] and link:https://github.com/redhat-developer-demos/ossm-heading-to-production-and-day-2/tree/main/scenario-8-mesh-tuning#istiod-metrics-to-monitor[istiod metrics to monitor,window=_blank])):
 
 
-[cols="3,a"]
+[cols="15%,a"]
 |====
 |Metric Purpose | Metric Query
 | monitoring client latency averaged over the past minute by source and destination service names and namespace
