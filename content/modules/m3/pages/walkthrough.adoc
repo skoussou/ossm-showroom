@@ -151,24 +151,6 @@ image::03-prod-istio-system.png[]
 
 NOTE: The configs came from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/create-prod-smcp-1-tracing.sh[create-prod-smcp-1-tracing.sh,window=_blank] script which you can inspect for details.
 
-
-As a subtask modify the Red Hat Openshift Console by adding the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-kiali-ossmc-plugin.html[OpenShift Service Mesh Console plugin] to view the production Kiali UI embedded directly from the Openshift Console *Service Mesh* menu (2-3 minutes and a refresh of the browser is required). Look for *Service Mesh* menu and look through the graphs, configs etc.
-
-[source,shell,subs=attributes,role=execute]
-----
-./login-as.sh emma
-echo "apiVersion: kiali.io/v1alpha1
-kind: OSSMConsole
-metadata:
-  name: ossmconsole
-  namespace: openshift-operators
-spec:
-  version: default
-  kiali:
-    serviceName: 'kiali'
-    serviceNamespace: '{openshift_cluster_user_name}-prod-istio-system'" | oc apply -f -
-----
-
 == Task 3: Add the Application Namespaces to the Production Mesh and create the Deployments
 
 In this task you will add the application namespaces to our newly created Service Mesh by specifying `ServiceMeshMember` resources and deploying the corresponding applications for production. You will also configure the applications for the usage within the Service Mesh by specifying two `sidecar` containers:
@@ -328,7 +310,26 @@ With this option metrics will be scraped by the Openshift Monitoring Stack's Pro
 Option 4: Integrate with an external `Monitoring` Tool::
 This option assumes that another tool like Datadog is used by the Operations team to collect metrics. In order to achieve this:
 
-For the purpose of this lab you will deliver *Option 3* in the production setup. Login as `Mesh Operator` (credentials `emma/emma`), the script below will help you create a `PVC` for Prometheus and update the Prometheus configuration to utilize it and extend metrics retention to `168h`.
+For the purpose of this lab you will deliver *Option 3* in the production setup. 
+
+As a first step modify the Red Hat Openshift Console by adding the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-kiali-ossmc-plugin.html[OpenShift Service Mesh Console plugin] to view the production Kiali UI embedded directly from the Openshift Console *Service Mesh* menu (2-3 minutes and a refresh of the browser is required). Look for *Service Mesh* menu and look through the graphs, configs etc.
+
+[source,shell,subs=attributes,role=execute]
+----
+./login-as.sh emma
+echo "apiVersion: kiali.io/v1alpha1
+kind: OSSMConsole
+metadata:
+  name: ossmconsole
+  namespace: openshift-operators
+spec:
+  version: default
+  kiali:
+    serviceName: 'kiali'
+    serviceNamespace: '{openshift_cluster_user_name}-prod-istio-system'" | oc apply -f -
+----
+
+Then, login as `Mesh Operator` (credentials `emma/emma`), the script below will help you create the necessary configurations to allow metrics to be collected for controlplane and dataplane by the openshift monitoring stack.
 
 [source,shell,subs=attributes,role=execute]
 ----
@@ -340,7 +341,7 @@ NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation
 
 After a few minutes the new components are up and running and the integration is complete. Now:
 
-* Metrics can be monitored via the Openshift monitoring console (*Observe -> metrics*). Try some of the following metrics (more on link:https://github.com/redhat-developer-demos/ossm-heading-to-production-and-day-2/tree/main/scenario-8-mesh-tuning#what-to-monitor-in-the-data-plane[What to monitor in the data plane,window=_blank] and link:https://github.com/redhat-developer-demos/ossm-heading-to-production-and-day-2/tree/main/scenario-8-mesh-tuning#istiod-metrics-to-monitor[istiod metrics to monitor,window=_blank])):
+* Metrics can be viewed via the Openshift monitoring console (*Observe -> metrics*). Try some of the following metrics (more on link:https://github.com/redhat-developer-demos/ossm-heading-to-production-and-day-2/tree/main/scenario-8-mesh-tuning#what-to-monitor-in-the-data-plane[What to monitor in the data plane,window=_blank] and link:https://github.com/redhat-developer-demos/ossm-heading-to-production-and-day-2/tree/main/scenario-8-mesh-tuning#istiod-metrics-to-monitor[istiod metrics to monitor,window=_blank])):
 
 
 [cols="15%,a"]
@@ -375,7 +376,7 @@ istio_request_duration_milliseconds_bucket{response_code="200"}
 |
 [source, yaml]
 ----
-increase(pilot_proxy_convergence_time_sum[30m])/increase(pilot_proxy_convergence_time_count[30m])
+increase(pilot_proxy_convergence_time_sum[10m])/increase(pilot_proxy_convergence_time_count[10m])
 ----
 |====
 
