@@ -312,7 +312,7 @@ This option assumes that another tool like Datadog is used by the Operations tea
 
 For the purpose of this lab you will deliver *Option 3* in the production setup. 
 
-As a first step modify the Red Hat Openshift Console by adding the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-kiali-ossmc-plugin.html[OpenShift Service Mesh Console plugin] to view the production Kiali UI embedded directly from the Openshift Console *Service Mesh* menu (after a few minutes you will be promted to refresh of the console). Look at the Openshift console (bottom left) for *Service Mesh* menu where you will find links tothe graphs, Istio Configs etc.
+As a first step modify the Red Hat Openshift Console by adding the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-kiali-ossmc-plugin.html[OpenShift Service Mesh Console plugin] to view the production Kiali UI embedded directly from the Openshift Console *Service Mesh* menu. After applying the plugin (below) login to the link:{openshift_cluster_console_url}[Openshift Console] where after a few minutes you will be promted to refresh it. Look at the Openshift console menu (bottom left) for the *Service Mesh* menu where you will find links to the graphs, Istio Configs etc.
 
 [source,shell,subs=attributes,role=execute]
 ----
