@@ -536,7 +536,7 @@ spec:
       targetLabel: mesh_id" |oc apply -f -
 ----
 
-Add the `Telemetry` configuration (read about it in link:https://istio.io/latest/docs/reference/config/telemetry/[Istio documentation]).
+Add the `Telemetry` configuration (more about it in link:https://istio.io/latest/docs/reference/config/telemetry/[Istio documentation]).
 
 [source,shell,subs=attributes,role=execute]
 ----

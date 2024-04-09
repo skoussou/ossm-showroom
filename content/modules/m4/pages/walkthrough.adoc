@@ -39,9 +39,9 @@ In this task you are going to create:
 
 === Step 1 - Inject new Gateway
 
-As of ossm v3 ingress & egress gateway creation and management will be decoupled from the `ServiceMeshControlPlane`. A team with the appropriate CR permissions can link:https://docs.openshift.com/container-platform/4.15/service_mesh/v2x/ossm-traffic-manage.html#ossm-automatic-gateway-injection_traffic-management[inject its own gateway] and manage security and protocols at the edge of the mesh.
+As of ossm v3 ingress & egress gateway creation and management will be decoupled from the `ServiceMeshControlPlane`, aligning it with Istio. A team with the appropriate CR permissions can link:https://docs.openshift.com/container-platform/4.15/service_mesh/v2x/ossm-traffic-manage.html#ossm-automatic-gateway-injection_traffic-management[inject its own gateway] and manage security and protocols at the edge of the mesh.
 
-As the Travel Services Domain Owner (Tech Lead) you will perform the injection of a new gateway to expose services from the ( `{openshift_cluster_user_name}-prod-travel-agency` namespace) Login with credentials `farid/farid`.
+As the Travel Services Domain Owner (Tech Lead) you have been given permissions to perform the injection of a new gateway to expose services from the (`{openshift_cluster_user_name}-prod-travel-agency` namespace). Login with credentials `farid/farid`.
 
 
 [source,shell,subs=attributes,role=execute]
@@ -58,7 +58,7 @@ Verify the creation of the additional gateway either in the OCP Console or with 
 
 [source,shell,subs=attributes,role=execute]
 ----
-$ oc get pods -n {openshift_cluster_user_name}-prod-travel-agency |grep gto
+oc get pods -n {openshift_cluster_user_name}-prod-travel-agency |grep gto
 ----
 
 === Step 2 - Expose and secure via MTLS host on new Gateway
