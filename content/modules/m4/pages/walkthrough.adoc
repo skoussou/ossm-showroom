@@ -54,7 +54,7 @@ cd lab-4
 NOTE: You can inspect the configs in detail at link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/inject-gto-ingress-gateway.sh[inject-gto-ingress-gateway.sh,window=_blank] script.
 
 
-Verify the creation of the additional gateway either in the OCP Console or with the CLI:
+Verify the creation of the additional gateway pods (2) either in the OCP Console or with the CLI:
 
 [source,shell,subs=attributes,role=execute]
 ----
@@ -167,10 +167,7 @@ As the communications between RHSSO and `istiod` are secured with a router certi
 ./mount-rhsso-cert-to-istiod.sh {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_user_name}-production {openshift_cluster_ingress_domain}
 ----
 
-The `RequestAuthentication` enables JWT validation on the Istio ingress gateway so that the validated JWT claims can later be used (i.e. in a `VirtualService`) for routing purposes. The request authentication is applied on the ingress gateway because the JWT claim based routing is *only* supported on ingress gateways.
-
-As the current Travel Agency decision is to have a producer/consumer model for their Service Mesh these changes are performed as Mesh Operator (`emma/emma`) in the controlplane namespace based gateway `gto-{openshift_cluster_user_name}-ingressgateway`.
-
+The `RequestAuthentication` enables JWT validation on the Istio ingress gateway so that the validated JWT claims can later be used (i.e. in a `VirtualService`) for routing purposes. 
 
 [NOTE]
 ====
