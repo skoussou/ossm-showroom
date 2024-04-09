@@ -290,7 +290,7 @@ image::03-Travel-Control-Dashboard-https.png[Travel Control Dashboard]
 
 == Task 5: Configure monitoring for Production
 
-Currently, the `mesh operator` deploys and manages all the monitoring addons as part of the link:https://console-openshift-console.{openshift_cluster_ingress_domain}/k8s/ns/{openshift_cluster_user_name}-prod-istio-system/clusterserviceversions/servicemeshoperator.v2.5.0/maistra.io~v2~ServiceMeshControlPlane/{openshift_cluster_user_name}-production[controlplane]. 
+Currently (by default), the `mesh operator` deploys and manages all the monitoring addons as part of the link:https://console-openshift-console.{openshift_cluster_ingress_domain}/k8s/ns/{openshift_cluster_user_name}-prod-istio-system/clusterserviceversions/servicemeshoperator.v2.5.0/maistra.io{caret}v2{caret}ServiceMeshControlPlane/{openshift_cluster_user_name}-production[controlplane]. 
 
 image::03-smcp-monitoring-stack.png[]
 
@@ -312,7 +312,7 @@ This option assumes that another tool like Datadog is used by the Operations tea
 
 For the purpose of this lab you will deliver *Option 3* in the production setup. 
 
-As a first step modify the Red Hat Openshift Console by adding the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-kiali-ossmc-plugin.html[OpenShift Service Mesh Console plugin] to view the production Kiali UI embedded directly from the Openshift Console *Service Mesh* menu (2-3 minutes and a refresh of the browser is required). Look for *Service Mesh* menu and look through the graphs, configs etc.
+As a first step modify the Red Hat Openshift Console by adding the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-kiali-ossmc-plugin.html[OpenShift Service Mesh Console plugin] to view the production Kiali UI embedded directly from the Openshift Console *Service Mesh* menu (after a few minutes you will be promted to refresh of the console). Look at the Openshift console (bottom left) for *Service Mesh* menu where you will find links tothe graphs, Istio Configs etc.
 
 [source,shell,subs=attributes,role=execute]
 ----
@@ -329,7 +329,7 @@ spec:
     serviceNamespace: '{openshift_cluster_user_name}-prod-istio-system'" | oc apply -f -
 ----
 
-Then, login as `Mesh Operator` (credentials `emma/emma`), the script below will help you create the necessary configurations to allow metrics to be collected for controlplane and dataplane by the openshift monitoring stack.
+Then, login as `Mesh Operator`, the script below will help you create the necessary configurations to allow metrics to be collected for controlplane and dataplane by the openshift monitoring stack.
 
 [source,shell,subs=attributes,role=execute]
 ----
@@ -337,14 +337,229 @@ Then, login as `Mesh Operator` (credentials `emma/emma`), the script below will 
 ./update-prod-ocp-userworkload-monitoring.sh {openshift_cluster_user_name}
 ----
 
+Add the `PodMonitor`, `ServiceMonitor` and `Telemetry` configurations as follows to complete the transition to Openshift user-workload monitoring stack.
+
+[source,shell,subs=attributes,role=execute]
+----
+echo "apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: istio-proxies-monitor
+  namespace: {openshift_cluster_user_name}-prod-travel-control
+spec:
+  selector:
+    matchExpressions:
+    - key: istio-prometheus-ignore
+      operator: DoesNotExist
+  podMetricsEndpoints:
+  - path: /stats/prometheus
+    interval: 30s
+    relabelings:
+    - action: keep
+      sourceLabels: [__meta_kubernetes_pod_container_name]
+      regex: "istio-proxy"
+    - action: keep
+      sourceLabels: [__meta_kubernetes_pod_annotationpresent_prometheus_io_scrape]
+    - action: replace
+      regex: (\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})
+      replacement: '[$2]:$1'
+      sourceLabels: [__meta_kubernetes_pod_annotation_prometheus_io_port,
+      __meta_kubernetes_pod_ip]
+      targetLabel: __address__
+    - action: replace
+      regex: (\d+);((([0-9]+?)(\.|$)){4})
+      replacement: $2:$1
+      sourceLabels: [__meta_kubernetes_pod_annotation_prometheus_io_port,
+      __meta_kubernetes_pod_ip]
+      targetLabel: __address__
+    - action: labeldrop
+      regex: "__meta_kubernetes_pod_label_(.+)"
+    - sourceLabels: [__meta_kubernetes_namespace]
+      action: replace
+      targetLabel: namespace
+    - sourceLabels: [__meta_kubernetes_pod_name]
+      action: replace
+      targetLabel: pod_name
+    - action: replace
+#      replacement: {openshift_cluster_user_name}-prod-istio-system/{openshift_cluster_user_name}-production
+      replacement: {openshift_cluster_user_name}-production-{openshift_cluster_user_name}-prod-istio-system
+      targetLabel: mesh_id" |oc apply -f -
+
+echo "apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: istio-proxies-monitor
+  namespace: {openshift_cluster_user_name}-prod-travel-portal
+spec:
+  selector:
+    matchExpressions:
+    - key: istio-prometheus-ignore
+      operator: DoesNotExist
+  podMetricsEndpoints:
+  - path: /stats/prometheus
+    interval: 30s
+    relabelings:
+    - action: keep
+      sourceLabels: [__meta_kubernetes_pod_container_name]
+      regex: "istio-proxy"
+    - action: keep
+      sourceLabels: [__meta_kubernetes_pod_annotationpresent_prometheus_io_scrape]
+    - action: replace
+      regex: (\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})
+      replacement: '[$2]:$1'
+      sourceLabels: [__meta_kubernetes_pod_annotation_prometheus_io_port,
+      __meta_kubernetes_pod_ip]
+      targetLabel: __address__
+    - action: replace
+      regex: (\d+);((([0-9]+?)(\.|$)){4})
+      replacement: $2:$1
+      sourceLabels: [__meta_kubernetes_pod_annotation_prometheus_io_port,
+      __meta_kubernetes_pod_ip]
+      targetLabel: __address__
+    - action: labeldrop
+      regex: "__meta_kubernetes_pod_label_(.+)"
+    - sourceLabels: [__meta_kubernetes_namespace]
+      action: replace
+      targetLabel: namespace
+    - sourceLabels: [__meta_kubernetes_pod_name]
+      action: replace
+      targetLabel: pod_name
+    - action: replace
+      replacement: {openshift_cluster_user_name}-production-{openshift_cluster_user_name}-prod-istio-system
+      targetLabel: mesh_id" |oc apply -f -
+
+echo "apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: istio-proxies-monitor
+  namespace: {openshift_cluster_user_name}-prod-travel-agency
+spec:
+  selector:
+    matchExpressions:
+    - key: istio-prometheus-ignore
+      operator: DoesNotExist
+  podMetricsEndpoints:
+  - path: /stats/prometheus
+    interval: 30s
+    relabelings:
+    - action: keep
+      sourceLabels: [__meta_kubernetes_pod_container_name]
+      regex: "istio-proxy"
+    - action: keep
+      sourceLabels: [__meta_kubernetes_pod_annotationpresent_prometheus_io_scrape]
+    - action: replace
+      regex: (\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})
+      replacement: '[$2]:$1'
+      sourceLabels: [__meta_kubernetes_pod_annotation_prometheus_io_port,
+      __meta_kubernetes_pod_ip]
+      targetLabel: __address__
+    - action: replace
+      regex: (\d+);((([0-9]+?)(\.|$)){4})
+      replacement: $2:$1
+      sourceLabels: [__meta_kubernetes_pod_annotation_prometheus_io_port,
+      __meta_kubernetes_pod_ip]
+      targetLabel: __address__
+    - action: labeldrop
+      regex: "__meta_kubernetes_pod_label_(.+)"
+    - sourceLabels: [__meta_kubernetes_namespace]
+      action: replace
+      targetLabel: namespace
+    - sourceLabels: [__meta_kubernetes_pod_name]
+      action: replace
+      targetLabel: pod_name
+    - action: replace
+      replacement: {openshift_cluster_user_name}-production-{openshift_cluster_user_name}-prod-istio-system
+      targetLabel: mesh_id" |oc apply -f -
+
+echo "apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: istio-proxies-monitor
+  namespace: {openshift_cluster_user_name}-prod-istio-system
+spec:
+  selector:
+    matchExpressions:
+    - key: istio-prometheus-ignore
+      operator: DoesNotExist
+  podMetricsEndpoints:
+  - path: /stats/prometheus
+    interval: 30s
+    relabelings:
+    - action: keep
+      sourceLabels: [__meta_kubernetes_pod_container_name]
+      regex: "istio-proxy"
+    - action: keep
+      sourceLabels: [__meta_kubernetes_pod_annotationpresent_prometheus_io_scrape]
+    - action: replace
+      regex: (\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})
+      replacement: '[$2]:$1'
+      sourceLabels: [__meta_kubernetes_pod_annotation_prometheus_io_port,
+      __meta_kubernetes_pod_ip]
+      targetLabel: __address__
+    - action: replace
+      regex: (\d+);((([0-9]+?)(\.|$)){4})
+      replacement: $2:$1
+      sourceLabels: [__meta_kubernetes_pod_annotation_prometheus_io_port,
+      __meta_kubernetes_pod_ip]
+      targetLabel: __address__
+    - action: labeldrop
+      regex: "__meta_kubernetes_pod_label_(.+)"
+    - sourceLabels: [__meta_kubernetes_namespace]
+      action: replace
+      targetLabel: namespace
+    - sourceLabels: [__meta_kubernetes_pod_name]
+      action: replace
+      targetLabel: pod_name
+    - action: replace
+      replacement: {openshift_cluster_user_name}-production-{openshift_cluster_user_name}-prod-istio-system
+      targetLabel: mesh_id" |oc apply -f -
+----
+
+[source,shell,subs=attributes,role=execute]
+----
+echo "apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: istiod-monitor
+  namespace: {openshift_cluster_user_name}-prod-istio-system
+spec:
+  targetLabels:
+  - app
+  selector:
+    matchLabels:
+      istio: pilot
+  endpoints:
+  - port: http-monitoring
+    interval: 30s
+    relabelings:
+    - action: replace
+#      replacement: {openshift_cluster_user_name}-prod-istio-system/{openshift_cluster_user_name}-production
+      replacement: {openshift_cluster_user_name}-production-{openshift_cluster_user_name}-prod-istio-system
+      targetLabel: mesh_id" |oc apply -f -
+----
+
+[source,shell,subs=attributes,role=execute]
+----
+echo "apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: enable-prometheus-metrics
+  namespace: {openshift_cluster_user_name}-prod-istio-system
+spec:
+  metrics:
+  - providers:
+    - name: prometheus" |oc apply -f -
+----
+
+
 NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/update-prod-ocp-userworkload-monitoring.sh[update-prod-ocp-userworkload-monitoring.sh,window=_blank] script which you can inspect for details.
 
-After a few minutes the new components are up and running and the integration is complete. Now:
+After a few minutes the new components are up and running and the integration is complete. 
 
 * Metrics can be viewed via the Openshift monitoring console (*Observe -> metrics*). Try some of the following metrics (more on link:https://github.com/redhat-developer-demos/ossm-heading-to-production-and-day-2/tree/main/scenario-8-mesh-tuning#what-to-monitor-in-the-data-plane[What to monitor in the data plane,window=_blank] and link:https://github.com/redhat-developer-demos/ossm-heading-to-production-and-day-2/tree/main/scenario-8-mesh-tuning#istiod-metrics-to-monitor[istiod metrics to monitor,window=_blank])):
 
 
-[cols="15%,a"]
+[cols="a,a"]
 |====
 |Metric Purpose | Metric Query
 | monitoring client latency averaged over the past minute by source and destination service names and namespace
@@ -380,7 +595,7 @@ increase(pilot_proxy_convergence_time_sum[10m])/increase(pilot_proxy_convergence
 ----
 |====
 
-* Furthermore, Kiali console is still showing traces and metrics with the latter retrieved from Openshift monitoring stack.
+* Furthermore, the Kiali theconsole is still showing traces and metrics with the latter retrieved from Openshift monitoring stack.
 
 == Task 6: Final Production Configuration
 
