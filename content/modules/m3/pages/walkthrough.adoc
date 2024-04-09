@@ -329,7 +329,7 @@ spec:
     serviceNamespace: '{openshift_cluster_user_name}-prod-istio-system'" | oc apply -f -
 ----
 
-Then, login as `Mesh Operator`, the script below will help you create the necessary configurations to allow metrics to be collected for controlplane and dataplane by the openshift monitoring stack.
+Then, login as `Mesh Operator`, the script below will help you create the necessary configurations (per the  link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-observability.html#ossm-integrating-with-user-workload-monitoring_observability[documentation,window=_blank]) to allow metrics to be collected for controlplane and dataplane by the openshift monitoring stack.
 
 [source,shell,subs=attributes,role=execute]
 ----
@@ -337,11 +337,11 @@ Then, login as `Mesh Operator`, the script below will help you create the necess
 ./update-prod-ocp-userworkload-monitoring.sh {openshift_cluster_user_name}
 ----
 
-Add the `PodMonitor`, `ServiceMonitor` and `Telemetry` configurations as follows to complete the transition to Openshift user-workload monitoring stack.
+The script helps to define the following `PodMonitor` and `ServiceMonitor` configurations for all the service mesh included namespaces, as it can be seen in the script log as well. You will have to add the `Telemetry` configuration by yourself (see further down) in order to to complete the transition to Openshift user-workload monitoring stack.
 
-[source,shell,subs=attributes,role=execute]
+[source,shell,subs=attributes]
 ----
-echo "apiVersion: monitoring.coreos.com/v1
+apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
   name: istio-proxies-monitor
@@ -381,11 +381,10 @@ spec:
       action: replace
       targetLabel: pod_name
     - action: replace
-#      replacement: {openshift_cluster_user_name}-prod-istio-system/{openshift_cluster_user_name}-production
       replacement: {openshift_cluster_user_name}-production-{openshift_cluster_user_name}-prod-istio-system
-      targetLabel: mesh_id" |oc apply -f -
+      targetLabel: mesh_id
 
-echo "apiVersion: monitoring.coreos.com/v1
+apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
   name: istio-proxies-monitor
@@ -426,9 +425,9 @@ spec:
       targetLabel: pod_name
     - action: replace
       replacement: {openshift_cluster_user_name}-production-{openshift_cluster_user_name}-prod-istio-system
-      targetLabel: mesh_id" |oc apply -f -
+      targetLabel: mesh_id
 
-echo "apiVersion: monitoring.coreos.com/v1
+apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
   name: istio-proxies-monitor
@@ -469,9 +468,9 @@ spec:
       targetLabel: pod_name
     - action: replace
       replacement: {openshift_cluster_user_name}-production-{openshift_cluster_user_name}-prod-istio-system
-      targetLabel: mesh_id" |oc apply -f -
+      targetLabel: mesh_id
 
-echo "apiVersion: monitoring.coreos.com/v1
+apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
   name: istio-proxies-monitor
@@ -512,10 +511,10 @@ spec:
       targetLabel: pod_name
     - action: replace
       replacement: {openshift_cluster_user_name}-production-{openshift_cluster_user_name}-prod-istio-system
-      targetLabel: mesh_id" |oc apply -f -
+      targetLabel: mesh_id
 ----
 
-[source,shell,subs=attributes,role=execute]
+[source,shell,subs=attributes]
 ----
 echo "apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -533,10 +532,11 @@ spec:
     interval: 30s
     relabelings:
     - action: replace
-#      replacement: {openshift_cluster_user_name}-prod-istio-system/{openshift_cluster_user_name}-production
       replacement: {openshift_cluster_user_name}-production-{openshift_cluster_user_name}-prod-istio-system
       targetLabel: mesh_id" |oc apply -f -
 ----
+
+Add the `Telemetry` configuration (read about it in link:https://istio.io/latest/docs/reference/config/telemetry/[Istio documentation]).
 
 [source,shell,subs=attributes,role=execute]
 ----
@@ -552,7 +552,7 @@ spec:
 ----
 
 
-NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/update-prod-ocp-userworkload-monitoring.sh[update-prod-ocp-userworkload-monitoring.sh,window=_blank] script which you can inspect for details.
+NOTE: The configs come from the link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/update-prod-ocp-userworkload-monitoring.sh[update-prod-ocp-userworkload-monitoring.sh,window=_blank] script which you can inspect for details.
 
 After a few minutes the new components are up and running and the integration is complete. 
 
@@ -595,7 +595,7 @@ increase(pilot_proxy_convergence_time_sum[10m])/increase(pilot_proxy_convergence
 ----
 |====
 
-* Furthermore, the Kiali theconsole is still showing traces and metrics with the latter retrieved from Openshift monitoring stack.
+* Furthermore, the Kiali console is still showing traces and metrics with the latter retrieved from the Openshift monitoring stack.
 
 == Task 6: Final Production Configuration
 
@@ -616,7 +616,6 @@ Therefore, based on these purpose and principals the final `PROD` setup will app
 
 * _Tracing:_ used only for debug purposes (rather than as sensitive -auditing- information), a sample *5%* of all traces will only be collected, whilst these are going to be stored for *7 Days*. Elastic Search cluster will be used for this long-term storage.
 * _Metrics:_ will have long-term storage (**7 Days**) with further archiving of the metrics beyond this period in order to assist historical comparisons
-* _Grafana:_ will have persistance storage
 * _Istio Ingress/Egress Gateways:_  (scale up to 2 instances)
 * _Istiod Controlplane_ (scale up to 2 instances)
 
