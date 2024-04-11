@@ -30,6 +30,7 @@ A main `travels` service will be the business entry point for the travel agency.
 Each service can provide an independent quote and the `travels` service must then aggregate them into a single response. Additionally, some users, like _registered_ users, can have access to special discounts, managed as well by an external service. +
 Service relations between namespaces can be described in the following diagram:
 
+[link=_images/01-travels-demo-design.png,window=_blank]
 image::01-travels-demo-design.png[]
 
 === Travel Portal and Travel Agency flow
@@ -48,4 +49,5 @@ The `travel-control` namespace runs a _business dashboard_ with two key features
 * Allow setting changes for every travel shop simulator (traffic ratio, device, user and type of travel).
 * Provide a _business_ view of the total requests generated from the `travel-portal` namespace to the `travel-agency` services, organized by business criteria as grouped per shop, per type of traffic and per city.
 
+[link=_images/01-travels-dashboard.png,window=_blank]
 image::01-travels-dashboard.png[]

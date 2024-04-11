@@ -26,13 +26,11 @@ You can go and inspect these resources in this repository at a later stage.
 
 //Although for the labs the assets are made available you can additionally get and inspect these resources at a later stage from the link:https://github.com/redhat-gpte-devopsautomation/ossm-labs[ossm-labs,window=_blank] github repository.
 
-## Use of correct Openshift Namespaces
+## Openshift Cluster Environment
 
 [IMPORTANT]
 ====
-You will be using a *shared cluster for the development environment!* and the Service Mesh users are also common with access to multiple namespaces. Therefore, it is very important that each participant uses their allocated namespaces. In order to make use of the correct *namespaces* make sure you are accessing those with your allocated user id: *{openshift_cluster_user_name}*
-
-You will have a *dedicated OpenShift cluster for your production environment* and you are going to install a cluster-wide Service Mesh in this environment.
+You will be using a *dedicated OpenShift cluster for your development AND production environment* and therefore you are going to install Service Mesh in the multi-tenant mode in your OpenShift environment. 
 ====
 
 
