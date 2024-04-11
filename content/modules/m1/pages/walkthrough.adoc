@@ -1,4 +1,4 @@
-# Designing Service Mesh Perimeter and Operating Model
+# Module 1: Designing Service Mesh Perimeter and Operating Model
 
 ## Lab Walkthrough
 
@@ -69,13 +69,17 @@ For the purpose of the provided scenarios the Travel Agency has selected the fol
 |===
 
 [[sidenote2]]
-*Self-service (restricted):* In this Model of Operation the teams will be able to create `Service Mesh` configurations in a self-service manner with the exception of `Gateway` resources which will be handled by the `Service Mesh` operating admin.
+*Self-service (restricted):* In this Model of Operation the teams will be able to create `Service Mesh` configurations in a self-service manner, and even `Gateway` resources can be injected without a `Service Mesh` operating admin.
 
 == Travel Agency Personas & Roles
 
 The following Travel Agency enterprise personas that will interact with the Service Mesh (OSSM) have been identified. Typically these are the most common ones in customer organizations (albeit with possible different names).
 
+[NOTE]
+====
 Upstream Istio, and so OpenShift Service Mesh, do not define standard or default user roles it is up to each project/implementation to define the appropriate permissions and roles for the required personas in order to access the necessary Service Mesh resources.
+====
+
 We have defined those based on the _Model of Operation_ and expected User Governance.
 
 In the following table you’ll see the Persona / Role mappings for the Travel Agency personas:

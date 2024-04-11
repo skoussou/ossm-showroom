@@ -1,4 +1,4 @@
-# Designing Service Mesh Perimeter and Operating Model
+# Module 1: Designing Service Mesh Perimeter and Operating Model
 
 ## Congratulations on completing this module!
 
