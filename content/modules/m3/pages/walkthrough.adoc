@@ -1,12 +1,12 @@
-# Setup Travel Demo `ServiceMeshControlPlane` for Production
+# Module 3: Setup Travel Agency `ServiceMeshControlPlane` for Production
 
 == Task 1: Export Environment variables
 
 [IMPORTANT,subs=attributes]
 ====
-As this is a multi-tenant cluster you should restrict use for this lab to the following namespaces associated with your user *`{openshift_cluster_user_name}-prod-istio-system`*, *`{openshift_cluster_user_name}-prod-travel-control`*, *`{openshift_cluster_user_name}-prod-travel-portal`*, *`{openshift_cluster_user_name}-prod-travel-agency`*
+As this is a dedicated cluster but with a multi-tenant Service Mesh installation, you should restrict use for this lab module to the following prod namespaces associated with your user *`{openshift_cluster_user_name}-prod-istio-system`*, *`{openshift_cluster_user_name}-prod-travel-control`*, *`{openshift_cluster_user_name}-prod-travel-portal`*, *`{openshift_cluster_user_name}-prod-travel-agency`*
 
-Export the following in your link:https://codeserver-codeserver-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain}[code-server] terminal and proceed to the location of the `ossm-labs` assets repository which you have cloned earlier.
+Export the following variables in your terminal and proceed with the instructions.
 
 [source,shell,subs=attributes,role=execute]
 ----
@@ -173,6 +173,10 @@ Now let's get started.
 [source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh farid
+----
++
+[source,shell,subs=attributes,role=execute]
+----
 ./check-project-labels.sh {openshift_cluster_user_name}-prod-travel-agency
 ----
 +
@@ -190,7 +194,10 @@ The result of this command should look similar to this:
 [source,shell,subs=attributes,role=execute]
 ----
 ./create-membership.sh {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_user_name}-production {openshift_cluster_user_name}-prod-travel-agency
-
+----
++
+[source,shell,subs=attributes,role=execute]
+----
 ./check-project-labels.sh {openshift_cluster_user_name}-prod-travel-agency
 ----
 +
@@ -214,6 +221,7 @@ The result of this command should look similar to this (you may need to retry a 
 +
 You can also login as `farid/farid` in the Openshift Console and verify the application PODs have started in your `{openshift_cluster_user_name}-prod-travel-agency` namespace (navigate to *`Administrator`* -> *`Workloads`* -> *`Pods`*). It should look like:
 +
+[link=_images/03-travel-agency-expected-3-container-pods.png,window=_blank]
 image::03-travel-agency-expected-3-container-pods.png[]
 
 
@@ -222,7 +230,15 @@ image::03-travel-agency-expected-3-container-pods.png[]
 [source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh cristina
+----
++
+[source,shell,subs=attributes,role=execute]
+----
 ./check-project-labels.sh {openshift_cluster_user_name}-prod-travel-control
+----
++
+[source,shell,subs=attributes,role=execute]
+----
 ./check-project-labels.sh {openshift_cluster_user_name}-prod-travel-portal
 ----
 
@@ -231,7 +247,10 @@ image::03-travel-agency-expected-3-container-pods.png[]
 [source,shell,subs=attributes,role=execute]
 ----
 ./create-membership.sh {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_user_name}-production {openshift_cluster_user_name}-prod-travel-control
-
+----
++
+[source,shell,subs=attributes,role=execute]
+----
 ./check-project-labels.sh {openshift_cluster_user_name}-prod-travel-control
 ----
 
@@ -240,7 +259,10 @@ image::03-travel-agency-expected-3-container-pods.png[]
 [source,shell,subs=attributes,role=execute]
 ----
 ./create-membership.sh {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_user_name}-production {openshift_cluster_user_name}-prod-travel-portal
-
+----
++
+[source,shell,subs=attributes,role=execute]
+----
 ./check-project-labels.sh {openshift_cluster_user_name}-prod-travel-portal
 ----
 
@@ -254,10 +276,12 @@ image::03-travel-agency-expected-3-container-pods.png[]
 * Login with `cristina/cristina` in the Openshift Console and verify that the applications have been created and are running in the two namespaces:
 ** `{openshift_cluster_user_name}-prod-travel-control`
 +
+[link=_images/03-travel-control-expected-3-container-pods.png,window=_blank]
 image::03-travel-control-expected-3-container-pods.png[]
 
 ** `{openshift_cluster_user_name}-prod-travel-portal`
 +
+[link=_images/03-travel-portal-expected-3-container-pods.png,window=_blank]
 image::03-travel-portal-expected-3-container-pods.png[]
 
 == Task 4: Expose the Travel Portal Dashboard via TLS
@@ -272,6 +296,7 @@ In order to achieve that,
 
 Right now if you login to the *production* link:https://kiali-{openshift_cluster_user_name}-prod-istio-system.{openshift_cluster_ingress_domain}/[Kiali Dashboard,window=_blank] with the user `emma/emma` (*Istio Config* -> filter by `VirtualService`) , there is an issue in the `VirtualService` resource `control` and an error on Kiali as no `Gateway` exists yet.
 
+[link=_images/03-no-gw-for-travel-control-ui-vs.png,window=_blank]
 image::03-no-gw-for-travel-control-ui-vs.png[]
 
 Login as Mesh Operator (credentials `emma/emma`) and execute the following script (follow the output) to achieve the above.
@@ -279,6 +304,10 @@ Login as Mesh Operator (credentials `emma/emma`) and execute the following scrip
 [source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh emma
+----
+
+[source,shell,subs=attributes,role=execute]
+----
 ./create-https-ingress-gateway.sh prod-istio-system {openshift_cluster_ingress_domain} {openshift_cluster_user_name}
 ----
 
@@ -286,12 +315,14 @@ NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation
 
 After finishing, the script above, you'll get the exposed URL Route and the `Travel Control Dashboard` should be accessible at https://travel-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain} and the `Kiali` error on the `VirtualService` resource `control` should now have been resolved.
 
+[link=_images/03-Travel-Control-Dashboard-https.png,window=_blank]
 image::03-Travel-Control-Dashboard-https.png[Travel Control Dashboard]
 
 == Task 5: Configure monitoring for Production
 
-Currently (by default), the `mesh operator` deploys and manages all the monitoring addons as part of the link:https://console-openshift-console.{openshift_cluster_ingress_domain}/k8s/ns/{openshift_cluster_user_name}-prod-istio-system/clusterserviceversions/servicemeshoperator.v2.5.0/maistra.io{caret}v2{caret}ServiceMeshControlPlane/{openshift_cluster_user_name}-production[controlplane]. 
+Currently (by default), the `mesh operator` deploys and manages all the monitoring addons as part of the link:https://console-openshift-console.{openshift_cluster_ingress_domain}/k8s/ns/{openshift_cluster_user_name}-prod-istio-system/clusterserviceversions/servicemeshoperator.v2.5.0/maistra.io{caret}v2{caret}ServiceMeshControlPlane/{openshift_cluster_user_name}-production[controlplane,window=_blank]. 
 
+[link=_images/03-smcp-monitoring-stack.png,window=_blank]
 image::03-smcp-monitoring-stack.png[]
 
 With a dedicated instance of Prometheus for collecting metrics, the `mesh operator` is responsible to provide resiliency for longterm storage of production metrics by extending the `Openshift Service Mesh Operator`.  There are several options to configure Prometheus to offer storage in production:
@@ -312,11 +343,15 @@ This option assumes that another tool like Datadog is used by the Operations tea
 
 For the purpose of this lab you will deliver *Option 3* in the production setup. 
 
-As a first step modify the Red Hat Openshift Console by adding the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-kiali-ossmc-plugin.html[OpenShift Service Mesh Console plugin] to view the production Kiali UI embedded directly from the Openshift Console *Service Mesh* menu. After applying the plugin (below) login to the link:{openshift_cluster_console_url}[Openshift Console] where after a few minutes you will be promted to refresh it. Look at the Openshift console menu (bottom left) for the *Service Mesh* menu where you will find links to the graphs, Istio Configs etc.
+As a first step modify the Red Hat Openshift Console by adding the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-kiali-ossmc-plugin.html[OpenShift Service Mesh Console plugin,window=_blank] to view the production Kiali UI embedded directly from the Openshift Console *Service Mesh* menu. After applying the plugin (below) login to the link:{openshift_cluster_console_url}[Openshift Console,window=_blank] where after a few minutes you will be promted to refresh it. Look at the Openshift console menu (bottom left) for the *Service Mesh* menu where you will find links to the graphs, Istio Configs etc.
 
 [source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh emma
+----
+
+[source,shell,subs=attributes,role=execute]
+----
 echo "apiVersion: kiali.io/v1alpha1
 kind: OSSMConsole
 metadata:
@@ -333,7 +368,6 @@ Then, login as `Mesh Operator`, the script below will help you create the necess
 
 [source,shell,subs=attributes,role=execute]
 ----
-./login-as.sh emma
 ./update-prod-ocp-userworkload-monitoring.sh {openshift_cluster_user_name}
 ----
 
@@ -514,7 +548,7 @@ spec:
       targetLabel: mesh_id
 ----
 
-[source,shell,subs=attributes]
+[source,shell,subs=attributes,role=execute]
 ----
 echo "apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -624,6 +658,9 @@ To apply the final production `SMCP` tuning, login as Mesh operator (credentials
 [source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh emma
+----
+[source,shell,subs=attributes,role=execute]
+----
 ./update-prod-smcp-3-final.sh {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_user_name}-production {openshift_cluster_user_name}-jaeger-small-production
 ----
 

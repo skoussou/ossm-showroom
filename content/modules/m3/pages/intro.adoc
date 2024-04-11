@@ -1,4 +1,4 @@
-# Setup Travel Demo `ServiceMeshControlPlane` for Production
+# Module 3: Setup Travel Agency `ServiceMeshControlPlane` for Production
 
 ## ABOUT THIS LAB
 
