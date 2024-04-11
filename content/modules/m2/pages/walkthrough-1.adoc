@@ -1,4 +1,4 @@
-# Service Mesh Development Environment
+# Module 2: Service Mesh Development Environment
 
 == Part I: Installing the Development environment
 
@@ -34,4 +34,9 @@ Reading the following is totally optional (you are urged to move to _Part II_ as
 
 1. As *emma* (role: `Mesh Operator`) create the Istio `Gateway` resource
 
-IMPORTANT: `OSSM` -like Istio- now offers the ability for the injection of an  *_ingress Gateway_* in the dataplane however for the _Travel Agency_ use case the Architects have selected a *_Self-Service(Restricted)_*  xref:m1:walkthrough.adoc#_user_governance_model[User Governance Model] where the `Mesh Operator` will be responsible for ingress/egress resource configurations.
+[IMPORTANT]
+====
+`OpenShift Service Mesh` -like Istio- now offers the ability for the injection of an  *_ingress Gateway_* in the dataplane. However for the _Travel Agency_ use case in the DEV environment the Architects have selected a *_Self-Service(Restricted)_*  xref:m1:walkthrough.adoc#_user_governance_model[User Governance Model] where the `Mesh Operator` will be responsible for ingress/egress resource configurations.
+
+You are going to use *_Gateway Injection_* in a later Lab module.
+====
