@@ -42,6 +42,10 @@ Login as Mesh Operator (credentials: `emma/emma`) and run the `create-prod-smcp-
 ----
 cd lab-3 
 ./login-as.sh emma
+----
+
+[source,shell,subs=attributes,role=execute]
+----
 ./create-prod-smcp-1-tracing.sh {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_user_name}-production {openshift_cluster_user_name}-jaeger-small-production
 ----
 
@@ -147,6 +151,7 @@ The applied `ServiceMeshControlPlane` Resource ensures that:
 
 Login to the Openshift console with Mesh Operator credentials `emma/emma` and navigate to *`Administrator`* -> *`Workloads`* -> *`Pods`*  in namespace `{openshift_cluster_user_name}-prod-istio-system` namespace. Verify all deployments and pods are running.
 
+[link=_images/03-prod-istio-system.png,window=_blank]
 image::03-prod-istio-system.png[]
 
 NOTE: The configs came from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/create-prod-smcp-1-tracing.sh[create-prod-smcp-1-tracing.sh,window=_blank] script which you can inspect for details.
@@ -313,14 +318,14 @@ Login as Mesh Operator (credentials `emma/emma`) and execute the following scrip
 
 NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/create-https-ingress-gateway.sh[create-https-ingress-gateway.sh,window=_blank] script which you can inspect for details.
 
-After finishing, the script above, you'll get the exposed URL Route and the `Travel Control Dashboard` should be accessible at https://travel-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain} and the `Kiali` error on the `VirtualService` resource `control` should now have been resolved.
+After finishing, the script above, you'll get the exposed URL Route and the `Travel Control Dashboard` should be accessible at link:https://travel-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain}[https://travel-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain},window=_blank] and the `Kiali` error on the `VirtualService` resource `control` should now have been resolved.
 
 [link=_images/03-Travel-Control-Dashboard-https.png,window=_blank]
 image::03-Travel-Control-Dashboard-https.png[Travel Control Dashboard]
 
 == Task 5: Configure monitoring for Production
 
-Currently (by default), the `mesh operator` deploys and manages all the monitoring addons as part of the link:https://console-openshift-console.{openshift_cluster_ingress_domain}/k8s/ns/{openshift_cluster_user_name}-prod-istio-system/clusterserviceversions/servicemeshoperator.v2.5.0/maistra.io{caret}v2{caret}ServiceMeshControlPlane/{openshift_cluster_user_name}-production[controlplane,window=_blank]. 
+Currently (by default), the `mesh operator` deploys and manages all the monitoring addons as part of the link:https://console-openshift-console.{openshift_cluster_ingress_domain}/k8s/cluster/projects/{openshift_cluster_user_name}-prod-istio-system/workloads?view=graph[controlplane,window=_blank]. 
 
 [link=_images/03-smcp-monitoring-stack.png,window=_blank]
 image::03-smcp-monitoring-stack.png[]
@@ -548,7 +553,7 @@ spec:
       targetLabel: mesh_id
 ----
 
-[source,shell,subs=attributes,role=execute]
+[source,shell,subs=attributes]
 ----
 echo "apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -570,7 +575,7 @@ spec:
       targetLabel: mesh_id" |oc apply -f -
 ----
 
-Add the `Telemetry` configuration (more about it in link:https://istio.io/latest/docs/reference/config/telemetry/[Istio documentation]).
+Add the `Telemetry` configuration (more about it in link:https://istio.io/latest/docs/reference/config/telemetry/[Istio documentation,window=_blank]).
 
 [source,shell,subs=attributes,role=execute]
 ----
