@@ -4,7 +4,7 @@
 
 This section is optional and you can also use for your own understanding of the procedure to provide corporate CA certs to istio rather than using the auto-created one by the operator. This will be achieved through integration with `cert-manager` and `istio-csr`. Note, although possible to use a Vault in this lab we will use a self-signed CA.
 
-=== Step 2 - Verify the current controlplane and dataplane used certificates
+=== Step 1 - Verify issuer of current certificates is `cluster.local`
 
 The current _controlplane_ and _dataplane_ certificates are issued by default `Issuer: O = cluster.local`. Verify this with the following commands:
 
@@ -30,7 +30,7 @@ oc exec "$(oc get pod -l app=istio-ingressgateway -n {openshift_cluster_user_nam
 oc exec "$(oc get pod -l app=travels -n {openshift_cluster_user_name}-prod-travel-agency -o jsonpath={.items..metadata.name})" -c istio-proxy -n {openshift_cluster_user_name}-prod-travel-agency -- openssl s_client -showcerts -connect $(oc -n {openshift_cluster_user_name}-prod-travel-agency get svc cars -o jsonpath={.spec.clusterIP}):8000
 ----
 
-=== Step 3: Integrate Service Mesh with `cert-manager` and `istio-csr`
+=== Step 2: Integrate Service Mesh with `cert-manager` and `istio-csr`
 
 The `cert-manager` operator is already installed and per the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-security.html#ossm-cert-manager-integration-istio_ossm-security[documentation] you will focus the activities to integrate it to the `ServiceMeshControlPlane`.
 
@@ -183,7 +183,7 @@ helm install istio-csr jetstack/cert-manager-istio-csr -n {openshift_cluster_use
 ./update-prod-smcp-use-istio-csr.sh  user1-prod-istio-system user1-production user1-jaeger-small-production
 ----
 
-=== Step 4: Verify the certificates used in the _controlplane_ and _dataplane_ are from the new `istio-ca`.
+=== Step 3: Verify the certificates used in the _controlplane_ and _dataplane_ are from issuer `issuer=O = travelagency.com.
 
 * Check the certificates used in the communication with istiod, the Issuer should be `issuer=O = travelagency.com, CN = istio-ca.travelagency.com`
 
