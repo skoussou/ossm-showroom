@@ -140,7 +140,7 @@ app:
 
   istio:
     namespace: {openshift_cluster_user_name}-prod-istio-system
-    revisions: ["basic"]
+    revisions: ["{openshift_cluster_user_name}-production"]
 
   server:
     maxCertificateDuration: 5m
@@ -211,4 +211,4 @@ oc exec "$(oc get pod -l app=travels -n user1-prod-travel-agency -o jsonpath={.i
 
 Congratulations!!! You have used your orgnization's -self-signed- CA to secure mesh communications.
 
-=== Step 5: Use the `istio-ca` to also secure external communciations (TODO)
+=== Step 4: Use the `istio-ca` to also secure external communciations (TODO)
