@@ -75,6 +75,8 @@ As Mesh Operator with `emma/emma`  apply the `default-deny` pattern to the prod-
 
 [source,shell,subs=attributes,role=execute]
 ----
+./login-as.sh farid
+
 echo "apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -88,6 +90,8 @@ and the prod-travel-control namespace:
 
 [source,shell,subs=attributes,role=execute]
 ----
+./login-as.sh cristina
+
 echo "apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -122,6 +126,7 @@ Let us check the communication paths again:
 
 [source,shell,subs=attributes,role=execute]
 ----
+./login-as.sh emma
 ./check-authz-all.sh DENY {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_ingress_domain} $SSO_CLIENT_SECRET {openshift_cluster_user_name}
 ----
 
@@ -221,7 +226,7 @@ spec:
  rules:
    - from:
        - source:
-           principals: [\"cluster.local/ns/{openshift_cluster_user_name}-prod-istio-system/sa/gto-{openshift_cluster_user_name}-ingressgateway-service-account\",\"cluster.local/ns/{openshift_cluster_user_name}-prod-travel-agency/sa/default\",\"cluster.local/ns/{openshift_cluster_user_name}-prod-travel-portal/sa/default\"]" |oc apply -f -
+           principals: [\"cluster.local/ns/{openshift_cluster_user_name}-prod-travel-agency/sa/default\",\"cluster.local/ns/{openshift_cluster_user_name}-prod-travel-portal/sa/default\"]" |oc apply -f -
 
 ----
 
