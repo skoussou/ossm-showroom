@@ -149,7 +149,7 @@ The applied `ServiceMeshControlPlane` Resource ensures that:
 ** *(4)* It will utilize Elastic Search for persistence of traces (unlike  in the `{openshift_cluster_user_name}-dev-istio-system` namespace where `memory` is utilized)
 ** *(5)* The `{openshift_cluster_user_name}-jaeger-small-production` external `Jaeger` Resource is integrated by and utilized in the `Service Mesh`.
 
-Login to the Openshift console with Mesh Operator credentials `emma/emma` and navigate to *`Administrator`* -> *`Workloads`* -> *`Pods`*  in namespace `{openshift_cluster_user_name}-prod-istio-system` namespace. Verify all deployments and pods are running.
+Login to the link:{openshift_cluster_console_url}[OpenShift console,window=_blank] with Mesh Operator credentials `emma/emma` and navigate to *`Administrator`* -> *`Workloads`* -> *`Pods`*  in namespace `{openshift_cluster_user_name}-prod-istio-system` namespace. Verify all deployments and pods are running.
 
 [link=_images/03-prod-istio-system.png,window=_blank]
 image::03-prod-istio-system.png[]
@@ -224,7 +224,7 @@ The result of this command should look similar to this (you may need to retry a 
 ./deploy-travel-services-domain.sh prod prod-istio-system {openshift_cluster_user_name}
 ----
 +
-You can also login as `farid/farid` in the Openshift Console and verify the application PODs have started in your `{openshift_cluster_user_name}-prod-travel-agency` namespace (navigate to *`Administrator`* -> *`Workloads`* -> *`Pods`*). It should look like:
+You can also login as `farid/farid` in the link:{openshift_cluster_console_url}[OpenShift console,window=_blank] and verify the application PODs have started in your `{openshift_cluster_user_name}-prod-travel-agency` namespace (navigate to *`Administrator`* -> *`Workloads`* -> *`Pods`*). It should look like:
 +
 [link=_images/03-travel-agency-expected-3-container-pods.png,window=_blank]
 image::03-travel-agency-expected-3-container-pods.png[]
@@ -278,7 +278,7 @@ image::03-travel-agency-expected-3-container-pods.png[]
 ./deploy-travel-portal-domain.sh prod prod-istio-system {openshift_cluster_ingress_domain} {openshift_cluster_user_name}
 ----
 
-* Login with `cristina/cristina` in the Openshift Console and verify that the applications have been created and are running in the two namespaces:
+* Login with `cristina/cristina` in the link:{openshift_cluster_console_url}[OpenShift console,window=_blank] and verify that the applications have been created and are running in the two namespaces:
 ** `{openshift_cluster_user_name}-prod-travel-control`
 +
 [link=_images/03-travel-control-expected-3-container-pods.png,window=_blank]

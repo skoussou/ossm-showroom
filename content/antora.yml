@@ -25,5 +25,6 @@ asciidoc:
     ssh_command: ssh devops@bastion.{guid}.example.opentlc.com
 
     openshift_cluster_ingress_domain: apps.openshift.com
-    openshift_api_server_url: https://openshift-url:6443
+    openshift_api_server_url: https://openshift-api:6443
     openshift_cluster_user_name: user1
+    openshift_cluster_console_url: https://openshift-console.com
