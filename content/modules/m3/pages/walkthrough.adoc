@@ -325,7 +325,8 @@ image::03-Travel-Control-Dashboard-https.png[Travel Control Dashboard]
 
 == Task 5: Configure monitoring for Production
 
-Currently (by default), the `mesh operator` deploys and manages all the monitoring addons as part of the link:https://console-openshift-console.{openshift_cluster_ingress_domain}/k8s/cluster/projects/{openshift_cluster_user_name}-prod-istio-system/workloads?view=graph[controlplane,window=_blank]. 
+Currently (by default), the `mesh operator` deploys and manages all the monitoring addons as part of the link:https://console-openshift-console.{openshift_cluster_ingress_domain}/k8s/ns/{openshift_cluster_user_name}-prod-istio-system/clusterserviceversions/servicemeshoperator.v2.5.0/maistra.io%7Ev2%7EServiceMeshControlPlane/{openshift_cluster_user_name}-production[controlplane,window=_blank]. 
+
 
 [link=_images/03-smcp-monitoring-stack.png,window=_blank]
 image::03-smcp-monitoring-stack.png[]
