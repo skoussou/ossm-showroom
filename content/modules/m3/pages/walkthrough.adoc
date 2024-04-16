@@ -32,7 +32,7 @@ cd lab-3
 
 You are going to create a basic Service Mesh Control Plane for production. Regarding the Tracing configuration, `Red Hat Openshift Service Mesh (OSSM)` makes the following 2 suggestions on setting up tracing for the production environment. `Option 2`, the _fully customized_ option, has been selected for the production setup.
 
-- Option 1: link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-deploy-production.html#ossm-smcp-prod_ossm-architecture[Production distributed tracing platform deployment (minimal) -  via SMCP Resource,window=_blank]
+- Option 1: link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-reference-jaeger.html#ossm-deploying-jaeger-production-min_jaeger-config-reference[Production distributed tracing platform deployment (minimal) -  via SMCP Resource,window=_blank]
 - Option 2: link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-reference-jaeger.html#ossm-deploying-jaeger-production_jaeger-config-reference[Production distributed tracing platform deployment (fully customized),window=_blank]
 
 
