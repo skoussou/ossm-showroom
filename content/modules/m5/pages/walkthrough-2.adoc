@@ -163,13 +163,16 @@ app:
       - cert-manager-istio-csr.{openshift_cluster_user_name}-prod-istio-system.svc" > 3-istio-csr.yaml
 ----
 
-* Install the helm repository and helm chart together with the values from the previous step.
+* Install the helm repository and helm chart together with the values from the previous step. As a result, 2 `cert-manager-istio-csr` PODs will be made available in the {openshift_cluster_user_name}-prod-istio-system.
 +
 [source,shell,subs=attributes,role=execute]
 ----
 helm repo add jetstack https://charts.jetstack.io
 helm install istio-csr jetstack/cert-manager-istio-csr -n {openshift_cluster_user_name}-prod-istio-system -f 3-istio-csr.yaml
 ----
++
+[link=_images/05-cert-manager-pods.png,window=_blank]
+image::05-cert-manager-pods.png[300,700]
 
 4. Lastly, integrate the `istio-csr` to the `{openshift_cluster_user_name}-production` `ServiceMeshControlPlane` by modifying the security section as follows:
 
@@ -212,7 +215,7 @@ oc delete secret istio-ca-secret -n {openshift_cluster_user_name}-prod-istio-sys
 +
 [source,shell,subs=attributes,role=execute]
 ----
-oc -n {openshift_cluster_user_name}-prod-istio-system delete pods -l "app in (istiod,istio-ingressgateway, istio-egressgateway,gto-{openshift_cluster_user_name}-ingressgateway)"
+oc -n {openshift_cluster_user_name}-prod-istio-system delete pods -l "app in (istiod,istio-ingressgateway, istio-egressgateway)"
 oc -n {openshift_cluster_user_name}-prod-istio-system get pods -w
 ----
 ** Restart the _dataplane_ pods to expedite the sidecar proxies picking up the certificates changes.

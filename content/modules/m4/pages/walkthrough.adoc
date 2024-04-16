@@ -255,6 +255,6 @@ echo $TOKEN
 
 Login to Kiali, go to menu `Graph`, select only namespace `{openshift_cluster_user_name}-prod-istio-system` and verify the traffic is successfully entering the mesh.
 
-[link=_images/04-gto-external-ingressgateway-jtw.png,window=_blank]
+[link=_images/04-gto-external-ingressgateway-jwt-2.png,window=_blank]
 image::04-gto-external-ingressgateway-jwt-2.png[300,700]
 
