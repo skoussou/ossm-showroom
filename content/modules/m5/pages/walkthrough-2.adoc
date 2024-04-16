@@ -2,11 +2,16 @@
 
 == Task 4 (Optional): Use an external custom Certificate Authority (CA)
 
-This section is optional and you can also use for your own understanding of the procedure to provide corporate CA certs to istio rather than using the auto-created one by the operator. This will be achieved through integration with `cert-manager` and `istio-csr`. Note, although possible to use a Vault in this lab we will use a self-signed CA.
+This section is optional and you can also use for your own understanding of the procedure to provide corporate CA certs to Red Hat Openshift Service Mesh rather than using the auto-created one. This will be achieved through integration with `cert-manager` and `istio-csr`. Note, although possible to use a Vault in this lab we will use a self-signed CA.
 
-=== Step 1 - Verify issuer of current certificates is `cluster.local`
+[IMPORTANT,subs=attributes]
+====
+`istio-csr` is currently unsupported by Red Hat (there are plans for support in the future) therefore a community version is currently used via helm chart installation.
+====
 
-The current _controlplane_ and _dataplane_ certificates are issued by default `Issuer: O = cluster.local`. Verify this with the following commands:
+=== Step 1 - Verify the default certificates issuer is `cluster.local`
+
+The current _controlplane_ and _dataplane_ certificates are issued by default with `Issuer: O = cluster.local`. Verify this with the following commands:
 
 * Check the issuer of the default service mesh CA certificate (it should be `Issuer: O = cluster.local`)
 +
@@ -24,7 +29,7 @@ oc get -o yaml secret istio-ca-secret -n {openshift_cluster_user_name}-prod-isti
 oc exec "$(oc get pod -l app=istio-ingressgateway -n {openshift_cluster_user_name}-prod-istio-system -o jsonpath={.items..metadata.name} | awk '{print $1}')" -c istio-proxy -n {openshift_cluster_user_name}-prod-istio-system -- openssl s_client -showcerts -connect $(oc get svc istiod-{openshift_cluster_user_name}-production -o jsonpath={.spec.clusterIP}):15012
 ----
 
-* Checking the certificates used in the POD to POD communications, the Issuer is again `Issuer=O = cluster.local`
+* Check the certificates used in the POD to POD communications, the Issuer is again `Issuer=O = cluster.local`
 +
 [source,shell,subs=attributes,role=execute]
 ----
@@ -33,7 +38,7 @@ oc exec "$(oc get pod -l app=travels -n {openshift_cluster_user_name}-prod-trave
 
 === Step 2: Integrate Service Mesh with `cert-manager` and `istio-csr`
 
-The `cert-manager` operator is already installed and per the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-security.html#ossm-cert-manager-integration-istio_ossm-security[documentation] you will focus the activities to integrate it to the `ServiceMeshControlPlane`.
+The `cert-manager` operator is already installed and per the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-security.html#ossm-cert-manager-integration-istio_ossm-security[documentation] you will focus the activities to integrate it to the production `ServiceMeshControlPlane`.
 
 1. First, create the root cluster issuer for the _Travel Agency_ solution.
 * Add the self-signed `Issuer` with a `Certificate` for the CA.
@@ -69,7 +74,7 @@ spec:
     group: cert-manager.io" |oc apply -f -
 ----
 
-* Create an `Issuer` that uses the above generated CA certificate to issue certs for the `istio-ca`
+* Create a `ClusterIssuer` that uses the above generated CA certificate to issue certs for the `istio-ca`.
 +
 [source,shell,subs=attributes,role=execute]
 ----
@@ -82,7 +87,7 @@ spec:
     secretName: root-ca" |oc apply -f -
 ----
 
-2. Secondly, create the `istio-ca` which will be used to issue certificates for the communications in the mesh (note both CA certificates duration have been set to _900 days_)
+2. Secondly, create the `istio-ca` which will be used to issue certificates for the communications in the mesh.
 +
 [source,shell,subs=attributes,role=execute]
 ----
@@ -113,10 +118,16 @@ spec:
   ca:
     secretName: istio-ca" |oc apply -f -
 ----
++
+[NOTE]
+====
+Expiration for both CA certificates has been set to _900 days_ at which point they will be automatically re-issued, this is something that can be adjusted based on an organization's security practices.
+====
++
 
-3. Final step before integration is the installation of the `istio-csr`. *Note:* _istio-csr_ is currently unsupported by Red Hat (there are plans for support in the future) so a community version is currently used via helm chart installation.
+3. The final step, before the integration, is the installation of the `istio-csr`.
 
-* Create the `3-istio-csr.yaml` file to contain the helm chart required configuration values.
+* Populate `3-istio-csr.yaml` to contain the helm chart's required configuration values.
 +
 [source,shell,subs=attributes,role=execute]
 ----
@@ -152,7 +163,7 @@ app:
       - cert-manager-istio-csr.{openshift_cluster_user_name}-prod-istio-system.svc" > 3-istio-csr.yaml
 ----
 
-* Install the repository and helm chart
+* Install the helm repository and helm chart together with the values from the previous step.
 +
 [source,shell,subs=attributes,role=execute]
 ----
@@ -161,6 +172,16 @@ helm install istio-csr jetstack/cert-manager-istio-csr -n {openshift_cluster_use
 ----
 
 4. Lastly, integrate the `istio-csr` to the `{openshift_cluster_user_name}-production` `ServiceMeshControlPlane` by modifying the security section as follows:
+
+* Remove the `istio-system-ca` secret created as default CA by OSSM as it interferes with _istiod_ correctly picking the enterprise certificates from the newly created `istio-ca` secret.
++
+[source,shell,subs=attributes,role=execute]
+----
+oc get  secret istio-ca-secret -n {openshift_cluster_user_name}-prod-istio-system -o yaml > istio-ca-secret-default.yaml
+oc delete secret istio-ca-secret -n {openshift_cluster_user_name}-prod-istio-system
+----
+
+* Update the `{openshift_cluster_user_name}-production` `ServiceMeshControlPlane`
 +
 [source,shell,subs=attributes]
 ----
@@ -184,17 +205,17 @@ helm install istio-csr jetstack/cert-manager-istio-csr -n {openshift_cluster_use
 ./update-prod-smcp-use-istio-csr.sh  user1-prod-istio-system user1-production user1-jaeger-small-production
 ----
 
-=== Step 3: Verify the certificates used in the _controlplane_ and _dataplane_ are from issuer `issuer=O = travelagency.com.
+=== Step 3: Verify the _controlplane_ and _dataplane_ certificates have `issuer=O = travelagency.com`
 
-* Check the certificates used in the communication with istiod, the Issuer should be `issuer=O = travelagency.com, CN = istio-ca.travelagency.com`
-
+* Restart _controlplane_ and _dataplane_ resources to expedite the new certificate utilization
+** Use the following command to restart the _controlplane_ pods (The Operator will automatically recreate the pods after they have been deleted):
++
 [source,shell,subs=attributes,role=execute]
 ----
-oc exec "$(oc get pod -l app=istio-ingressgateway -n user1-prod-istio-system -o jsonpath={.items..metadata.name} | awk '{print $1}')" -c istio-proxy -n user1-prod-istio-system -- openssl s_client -showcerts -connect $(oc get svc istiod-user1-production -o jsonpath={.spec.clusterIP}):15012
+oc -n {openshift_cluster_user_name}-prod-istio-system delete pods -l "app in (istiod,istio-ingressgateway, istio-egressgateway,gto-{openshift_cluster_user_name}-ingressgateway)"
+oc -n {openshift_cluster_user_name}-prod-istio-system get pods -w
 ----
-
-* Check the certificates used in the POD to POD communications, the Issuer is again Issuer=O = cluster.local
-** Restart the _dataplane_ pods to expedite the sidecar proxies picking up the secret changes.
+** Restart the _dataplane_ pods to expedite the sidecar proxies picking up the certificates changes.
 +
 [source,shell,subs=attributes,role=execute]
 ----
@@ -203,13 +224,57 @@ oc -n {openshift_cluster_user_name}-prod-travel-agency delete pods --all
 oc -n {openshift_cluster_user_name}-prod-travel-portal delete pods --all
 ----
 
-** Verify the issuer is `issuer=O = travelagency.com, CN = istio-ca.travelagency.com`
+* Check for the Issuer on the certificates used in the communication with _istiod_, it should be `issuer=O = travelagency.com, CN = istio-ca.travelagency.com`.
++
+[source,shell,subs=attributes,role=execute]
+----
+oc exec "$(oc get pod -l app=istio-ingressgateway -n user1-prod-istio-system -o jsonpath={.items..metadata.name} | awk '{print $1}')" -c istio-proxy -n user1-prod-istio-system -- openssl s_client -showcerts -connect $(oc get svc istiod-user1-production -o jsonpath={.spec.clusterIP}):15012
+----
+
+** Verify the issuer on certificates for POD to POD communications is `issuer=O = travelagency.com, CN = istio-ca.travelagency.com`.
 +
 [source,shell,subs=attributes,role=execute]
 ----
 oc exec "$(oc get pod -l app=travels -n user1-prod-travel-agency -o jsonpath={.items..metadata.name})" -c istio-proxy -n user1-prod-travel-agency -- openssl s_client -showcerts -connect $(oc -n user1-prod-travel-agency get svc cars -o jsonpath={.spec.clusterIP}):8000
 ----
 
+** Verify the Issuer on the certificates used in the communication between the injected `gto` gateway and _istiod_ is `issuer=O = travelagency.com, CN = istio-ca.travelagency.com`
++
+[source,shell,subs=attributes,role=execute]
+----
+oc exec "$(oc get pod -l app=gto-user1-ingressgateway -n user1-prod-travel-agency -o jsonpath={.items..metadata.name} | awk '{print $1}')" -c istio-proxy -n user1-prod-travel-agency -- openssl s_client -showcerts -connect $(oc get svc istiod-user1-production -o jsonpath={.spec.clusterIP}):15012
+----
+
+* Use *lab-4* scripts to verify communications are not distrupted. Export the following in the terminal.
++
+[source,shell,subs=attributes,role=execute]
+----
+export CLUSTER_API={openshift_api_server_url}
+export LAB_PARTICIPANT_ID={openshift_cluster_user_name}
+export OCP_DOMAIN={openshift_cluster_ingress_domain}
+export SSO_CLIENT_SECRET=bcd06d5bdd1dbaaf81853d10a66aeb989a38dd51
+----
+
+* Next, authenticate against the RH-SSO instance and retrieve a JWT Access Token:
++
+[source,shell,subs=attributes,role=execute]
+----
+TOKEN=$(curl -Lk --data "username=gtouser&password=gtouser&grant_type=password&client_id=istio-{openshift_cluster_user_name}&client_secret=$SSO_CLIENT_SECRET" https://keycloak-rhsso.{openshift_cluster_ingress_domain}/auth/realms/servicemesh-lab/protocol/openid-connect/token | jq .access_token)
+
+echo $TOKEN
+----
+
+* Finally send requests with the JWT Token to the additional Ingress Gateway by using MTLS:
++
+[source,shell,subs=attributes,role=execute]
+----
+./login-as.sh emma
+./call-via-mtls-and-jwt-travel-agency-api.sh {openshift_cluster_user_name}-prod-travel-agency gto-{openshift_cluster_user_name} $TOKEN
+----
+
+Login to Kiali, go to menu `Graph`, select only namespace `{openshift_cluster_user_name}-prod-istio-system` and verify the traffic is successfully entering the mesh.
+
 Congratulations!!! You have used your orgnization's -self-signed- CA to secure mesh communications.
+
 
 === Step 4: Use the `istio-ca` to also secure external communciations (TODO)
