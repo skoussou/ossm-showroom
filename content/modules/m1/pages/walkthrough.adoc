@@ -41,7 +41,7 @@ Is it multi tenant cluster running/operating several application domains or is i
 
 _Choices of automation_::
 
-What kind of automation to use to configure apps, the mesh configuration and the cloud platform? (Using i.e. CI/CD Pipelines, GitOps, Ansible, Scripting, ACM or none).
+What kind of automation to use to configure apps, the mesh configuration and the cloud platform? (Using i.e. CI/CD Pipelines, GitOps, Ansible, Scripting, link:https://www.redhat.com/en/technologies/management/advanced-cluster-management[ACM,window=_blank] or none).
 
 _Platform (Service Mesh) Operating Model_::
 
@@ -60,16 +60,16 @@ For the purpose of the provided scenarios the Travel Agency has selected the fol
 
 | 1 | Cluster Type | Dedicated Cluster
 
-| 2 | Automation | Scripting (Step2 is GitOps)
+| 2 | Automation | Scripting
 
-| 3 | Platform Operating Model | <<sidenote2,Self-Service platform (restricted)>>
+| 3 | Platform Operating Model | <<sidenote2,Self-Service platform>>
 
 | 4 | Dev(Sec)Ops Methodology | not covered by the Labs
 
 |===
 
 [[sidenote2]]
-*Self-service (restricted):* In this Model of Operation the teams will be able to create `Service Mesh` configurations in a self-service manner, and even `Gateway` resources can be injected without a `Service Mesh` operating admin.
+*Self-service:* In this Model of Operation the teams will be able to create `Service Mesh` configurations in a self-service manner, and even `Gateway` resources can be injected without a `Service Mesh` operating admin.
 
 == Travel Agency Personas & Roles
 

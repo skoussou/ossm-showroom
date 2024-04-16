@@ -11,10 +11,10 @@ Reading the following is totally optional (you are urged to move to _Part II_ as
 
 === Actions with role Cluster Admin
 
-1. As openshift administrator (role: `Cluster Admin`) add the `Service Mesh` operators in the OCP Cluster
-2. As openshift administrator (role: `Cluster Admin`) once the operators have been successfully installed, create the necessary _Travel Agency_ Namespaces
-3. As openshift administrator (role: `Cluster Admin`) create the `Service Mesh Roles`
-4. As openshift administrator (role: `Cluster Admin`) create the Service Mesh Users and assign Roles
+1. As a platform admin (role: `Cluster Admin`) add the `Service Mesh` operators in the OCP Cluster
+2. As a platform admin (role: `Cluster Admin`) once the operators have been successfully installed, create the necessary _Travel Agency_ Namespaces
+3. As a platform admin (role: `Cluster Admin`) create the `Service Mesh Roles`
+4. As a platform admin (role: `Cluster Admin`) create the Service Mesh Users and assign Roles
 
 === Actions with role Mesh Operator
 
@@ -36,7 +36,7 @@ Reading the following is totally optional (you are urged to move to _Part II_ as
 
 [IMPORTANT]
 ====
-`OpenShift Service Mesh` -like Istio- now offers the ability for the injection of an  *_ingress Gateway_* in the dataplane. However for the _Travel Agency_ use case in the DEV environment the Architects have selected a *_Self-Service(Restricted)_*  xref:m1:walkthrough.adoc#_user_governance_model[User Governance Model] where the `Mesh Operator` will be responsible for ingress/egress resource configurations.
+`OpenShift Service Mesh` - like Istio - now offers the ability for the injection of an  *_ingress Gateway_* in the dataplane. However for the _Travel Agency_ use case in the DEV environment the Architects have selected a *_Self-Service_*  xref:m1:walkthrough.adoc#_user_governance_model[User Governance Model] where the `Mesh Operator` will be responsible for ingress/egress resource configurations.
 
 You are going to use *_Gateway Injection_* in a later Lab module.
 ====
