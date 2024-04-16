@@ -174,7 +174,7 @@ helm install istio-csr jetstack/cert-manager-istio-csr -n {openshift_cluster_use
 [link=_images/05-cert-manager-pods.png,window=_blank]
 image::05-cert-manager-pods.png[300,700]
 
-4. Lastly, integrate the `istio-csr` to the `{openshift_cluster_user_name}-production` `ServiceMeshControlPlane` by modifying the security section as follows:
+4. Lastly, integrate the `istio-csr` to the `{openshift_cluster_user_name}-production`.
 
 * Remove the `istio-system-ca` secret created as default CA by OSSM as it interferes with _istiod_ correctly picking the enterprise certificates from the newly created `istio-ca` secret.
 +
@@ -184,7 +184,7 @@ oc get  secret istio-ca-secret -n {openshift_cluster_user_name}-prod-istio-syste
 oc delete secret istio-ca-secret -n {openshift_cluster_user_name}-prod-istio-system
 ----
 
-* Update the `{openshift_cluster_user_name}-production` `ServiceMeshControlPlane`
+* Update the `{openshift_cluster_user_name}-production` `ServiceMeshControlPlane` security section as follows:
 +
 [source,shell,subs=attributes]
 ----
