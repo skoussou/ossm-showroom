@@ -86,7 +86,7 @@ The applied `Jaeger` setup will ensure that:
 ** *(4)* Elastic Search will be hosted on a single Elastic node
 ** *(5)* Total Elastic Search Index size will be _`1Gi`_
 ** *(6)* Resource for the node will be both requested and limited
-** *(7)* Since a single node is setup redundancy of the indices will be set to `ZeroRedundancy`
+** *(7)* Since a single node is setup for ES, the redundancy of the Jaeger indices will be set to `ZeroRedundancy`
 
 
 * This is the SMCP Resource that is configured to use the external Jaeger instance:
