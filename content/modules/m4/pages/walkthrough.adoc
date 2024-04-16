@@ -6,7 +6,7 @@
 ====
 As this is a multi-tenant cluster you should restrict use for this lab to the following namespaces associated with your user *`{openshift_cluster_user_name}-prod-istio-system`*, *`{openshift_cluster_user_name}-prod-travel-control`*, *`{openshift_cluster_user_name}-prod-travel-portal`*, *`{openshift_cluster_user_name}-prod-travel-agency`*
 
-Export the following in a terminal in your link:https://codeserver-codeserver-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain}[code-server environment].
+Export the following in the terminal.
 
 [source,shell,subs=attributes,role=execute]
 ----
