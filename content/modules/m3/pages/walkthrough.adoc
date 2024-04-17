@@ -23,7 +23,7 @@ If you are running out of time and wish to complete the following lab sections i
 
 [source,shell,subs=attributes,role=execute]
 ----
-cd lab-3
+cd ~/ossm-labs/lab-3
 ./complete-lab-3.sh {openshift_cluster_ingress_domain} {openshift_cluster_user_name}
 ----
 ====
@@ -40,7 +40,7 @@ Login as Mesh Operator (credentials: `emma/emma`) and run the `create-prod-smcp-
 
 [source,shell,subs=attributes,role=execute]
 ----
-cd lab-3 
+cd ~/ossm-labs/lab-3
 ./login-as.sh emma
 ----
 
@@ -663,7 +663,7 @@ Therefore, based on these purpose and principals the final `PROD` setup will app
 * _Istio Ingress/Egress Gateways:_  (scale up to 2 instances)
 * _Istiod Controlplane_ (scale up to 2 instances)
 
-To apply the final production `SMCP` tuning, login as Mesh operator (credentials `emma/emma`) and execute the final update script. Follow the script logs to understand the changes applied. On a separate terminal you can execute `oc get pods -w -n {openshift_cluster_user_name}-prod-istio-system` to follow the POD scalings.
+To apply the final production `SMCP` tuning, login as Mesh operator (credentials `emma/emma`) and execute the final update script. Follow the script logs to understand the changes applied. Additionally, you can execute `oc get pods -w -n {openshift_cluster_user_name}-prod-istio-system` to follow the POD scalings.
 
 [source,shell,subs=attributes,role=execute]
 ----
