@@ -1,4 +1,4 @@
-# Part I: Apply Business Authorization Restrictions
+# Module 5, Part I: Apply Business Authorization Restrictions
 
 == Task 1: Export Environment variables
 
@@ -132,6 +132,7 @@ Let us check the communication paths again:
 
 You can also login to Kiali and verify the traffic in the Dashboard:
 
+[link=_images/05-DENY-ALL-KIALI.png,window=_blank]
 image::05-DENY-ALL-KIALI.png[300,700]
 
 === Step 4 - Authz policy to allow Travel Dashboard UI access
@@ -241,6 +242,7 @@ Verify all communications meet the fine-grained authorization targets set by the
 
 Please also login to Kiali and observe the communication flows:
 
+[link=_images/05-access-restored-with-authz-policies.png,window=_blank]
 image::05-access-restored-with-authz-policies.png[300,700]
 
 == Task 3(Optional): Disable STRICT MTLS for specific services

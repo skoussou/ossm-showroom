@@ -1,4 +1,4 @@
-# Part II: Setting Up Corporate CA for Service Mesh
+# Module 5, Part II: Setting Up Corporate CA for Service Mesh
 
 == Task 4 (Optional): Use an external custom Certificate Authority (CA)
 
@@ -38,7 +38,7 @@ oc exec "$(oc get pod -l app=travels -n {openshift_cluster_user_name}-prod-trave
 
 === Step 2: Integrate Service Mesh with `cert-manager` and `istio-csr`
 
-The `cert-manager` operator is already installed and per the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-security.html#ossm-cert-manager-integration-istio_ossm-security[documentation] you will focus the activities to integrate it to the production `ServiceMeshControlPlane`.
+The `cert-manager` operator is already installed and per the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-security.html#ossm-cert-manager-integration-istio_ossm-security[documentation,window=_blank] you will focus the activities to integrate it to the production `ServiceMeshControlPlane`.
 
 1. First, create the root cluster issuer for the _Travel Agency_ solution.
 * Add the self-signed `Issuer` with a `Certificate` for the CA.
