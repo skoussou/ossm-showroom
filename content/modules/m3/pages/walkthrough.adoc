@@ -374,7 +374,7 @@ spec:
     serviceNamespace: '{openshift_cluster_user_name}-prod-istio-system'" | oc apply -f -
 ----
 
-Then, login as `Mesh Operator`, the script below will help you create the necessary configurations (per the  link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-observability.html#ossm-integrating-with-user-workload-monitoring_observability[documentation,window=_blank]) to allow metrics to be collected for controlplane and dataplane by the openshift monitoring stack.
+Then, still logged as emma (`Mesh Operator`), the script below will help you create the necessary configurations (per the  link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-observability.html#ossm-integrating-with-user-workload-monitoring_observability[documentation,window=_blank]) to allow metrics to be collected for controlplane and dataplane by the openshift monitoring stack.
 
 [source,shell,subs=attributes,role=execute]
 ----
