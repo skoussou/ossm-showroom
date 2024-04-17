@@ -331,7 +331,7 @@ Currently (by default), the `mesh operator` deploys and manages all the monitori
 [link=_images/03-smcp-monitoring-stack.png,window=_blank]
 image::03-smcp-monitoring-stack.png[]
 
-With a dedicated instance of Prometheus for collecting metrics, the `mesh operator` is responsible to provide resiliency for longterm storage of production metrics by extending the `Openshift Service Mesh Operator`.  There are several options to configure Prometheus to offer storage in production:
+Moving to a dedicated instance of Prometheus for collecting metrics in production, the `mesh operator` is responsible to provide resiliency for longterm storage of production metrics by extending the `Openshift Service Mesh Operator`. There are several options to configure Prometheus to offer storage in production:
 
 Option 1: Create a `PersistenceVolume` for the `SMCP` created `Prometheus` resource::
 With this option the `mesh operator` will enhance the `SMCP` managed `Prometheus Deployment` resource in order to
