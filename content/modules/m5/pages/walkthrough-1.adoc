@@ -24,7 +24,7 @@ If you are running out of time and wish to complete the following lab sections i
 
 [source,shell,subs=attributes,role=execute]
 ----
-cd lab-5
+cd ~/ossm-labs/lab-5
 ./complete-lab-5.sh $SSO_CLIENT_SECRET {openshift_cluster_ingress_domain} {openshift_cluster_user_name}
 ----
 ====
@@ -61,7 +61,7 @@ Verify the default communication paths described in the table above. Login as Me
 
 [source,shell,subs=attributes,role=execute]
 ----
-cd lab-5
+cd ~/ossm-labs/lab-5
 ./login-as.sh emma
 
 ./check-authz-all.sh ALLOW {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_ingress_domain} $SSO_CLIENT_SECRET {openshift_cluster_user_name}
@@ -276,7 +276,7 @@ First login as Mesh Developer with `farid/farid` and check the global mTLS confi
 
 [source,shell,subs=attributes,role=execute]
 ----
-cd lab-5
+cd ~/ossm-labs/lab-5
 
 ./login-as.sh farid
 

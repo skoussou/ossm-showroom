@@ -23,7 +23,7 @@ If you are running out of time and wish to complete the following lab sections i
 
 [source,shell,subs=attributes,role=execute]
 ----
-cd lab-4
+cd ~/ossm-labs/lab-4
 ./complete-lab-4.sh $SSO_CLIENT_SECRET {openshift_cluster_ingress_domain} {openshift_cluster_user_name}
 ----
 ====

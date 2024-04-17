@@ -17,7 +17,7 @@ The current _controlplane_ and _dataplane_ certificates are issued by default wi
 +
 [source,shell,subs=attributes,role=execute]
 ----
-cd lab-5
+cd ~/ossm-labs/lab-5
 ./login-as.sh emma
 oc get -o yaml secret istio-ca-secret -n {openshift_cluster_user_name}-prod-istio-system | grep ca-cert | awk '{print $2}' | base64 -d | openssl x509 -noout -text
 ----
