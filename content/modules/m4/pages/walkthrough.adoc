@@ -58,7 +58,7 @@ Verify the creation of the additional gateway pods (2) either in the OCP Console
 
 [source,shell,subs=attributes,role=execute]
 ----
-oc get pods -n {openshift_cluster_user_name}-prod-travel-agency |grep gto
+oc get pods -n {openshift_cluster_user_name}-prod-travel-agency | grep gto
 ----
 
 === Step 2 - Expose and secure via MTLS host on new Gateway
