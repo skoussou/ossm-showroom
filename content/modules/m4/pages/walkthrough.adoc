@@ -23,7 +23,7 @@ If you are running out of time and wish to complete the following lab sections i
 
 [source,shell,subs=attributes,role=execute]
 ----
-cd lab-4
+cd ~/ossm-labs/lab-4
 ./complete-lab-4.sh $SSO_CLIENT_SECRET {openshift_cluster_ingress_domain} {openshift_cluster_user_name}
 ----
 ====
@@ -39,7 +39,7 @@ In this task you are going to create:
 
 === Step 1 - Inject new Gateway
 
-As of ossm v3 ingress & egress gateway creation and management will be decoupled from the `ServiceMeshControlPlane`, aligning it with Istio. A team with the appropriate CR permissions can link:https://docs.openshift.com/container-platform/4.15/service_mesh/v2x/ossm-traffic-manage.html#ossm-automatic-gateway-injection_traffic-management[inject its own gateway] and manage security and protocols at the edge of the mesh.
+As of ossm v3 ingress & egress gateway creation and management will be decoupled from the `ServiceMeshControlPlane`, aligning it with Istio. A team with the appropriate CR permissions can link:https://docs.openshift.com/container-platform/4.15/service_mesh/v2x/ossm-traffic-manage.html#ossm-automatic-gateway-injection_traffic-management[inject its own gateway,window=_blank] and manage security and protocols at the edge of the mesh.
 
 As the Travel Services Domain Owner (Tech Lead) you have been given permissions to perform the injection of a new gateway to expose services from the (`{openshift_cluster_user_name}-prod-travel-agency` namespace). Login with credentials `farid/farid`.
 
@@ -51,7 +51,7 @@ cd lab-4
 ./inject-gto-ingress-gateway.sh prod-travel-agency {openshift_cluster_ingress_domain} user1
 ----
 
-NOTE: You can inspect the configs in detail at link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/inject-gto-ingress-gateway.sh[inject-gto-ingress-gateway.sh,window=_blank] script.
+NOTE: You can inspect the configs in detail at link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-4/inject-gto-ingress-gateway.sh[inject-gto-ingress-gateway.sh,window=_blank] script.
 
 
 Verify the creation of the additional gateway pods (2) either in the OCP Console or with the CLI:
