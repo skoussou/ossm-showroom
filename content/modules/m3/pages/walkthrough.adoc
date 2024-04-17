@@ -347,6 +347,10 @@ With this option metrics will be scraped by the Openshift Monitoring Stack's Pro
 Option 4: Integrate with an external `Monitoring` Tool::
 This option assumes that another tool like Datadog is used by the Operations team to collect metrics. In order to achieve this:
 
+* For _controlplane_ components metrics collection, the tool needs to be part of the control plane namespace or a NetworkPolicy to allow it visibility to those components is required.
+
+* For _dataplane_ metrics the same approach described, previously, in Option 3 is to be followed.
+
 For the purpose of this lab you will deliver *Option 3* in the production setup. 
 
 As a first step modify the Red Hat Openshift Console by adding the link:https://docs.openshift.com/container-platform/4.14/service_mesh/v2x/ossm-kiali-ossmc-plugin.html[OpenShift Service Mesh Console plugin,window=_blank] to view the production Kiali UI embedded directly from the Openshift Console *Service Mesh* menu. After applying the plugin (below) login to the link:{openshift_cluster_console_url}[Openshift Console,window=_blank] where after a few minutes you will be promted to refresh it. Look at the Openshift console menu (bottom left) for the *Service Mesh* menu where you will find links to the graphs, Istio Configs etc.
