@@ -184,7 +184,7 @@ oc get  secret istio-ca-secret -n {openshift_cluster_user_name}-prod-istio-syste
 oc delete secret istio-ca-secret -n {openshift_cluster_user_name}-prod-istio-system
 ----
 
-* Update the `{openshift_cluster_user_name}-production` `ServiceMeshControlPlane` security section as follows:
+* Update the `{openshift_cluster_user_name}-production` `ServiceMeshControlPlane` security section as follows (the script execution will apply this change):
 +
 [source,shell,subs=attributes]
 ----
@@ -279,7 +279,7 @@ cd ../lab-4
 
 Login to Kiali, go to menu `Graph`, select only namespace `{openshift_cluster_user_name}-prod-istio-system` and verify the traffic is successfully entering the mesh.
 
-Congratulations!!! You have used your orgnization's -self-signed- CA to secure mesh communications.
+Congratulations!!! You have successfully helped Travel Agency orgnization to use -self-signed- CA to secure mesh communications.
 
 
 === Step 4: Use the `istio-ca` to also secure external communciations (TODO)
