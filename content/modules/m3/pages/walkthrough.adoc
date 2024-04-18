@@ -178,10 +178,6 @@ Now let's get started.
 [source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh farid
-----
-+
-[source,shell,subs=attributes,role=execute]
-----
 ./check-project-labels.sh {openshift_cluster_user_name}-prod-travel-agency
 ----
 +
@@ -235,15 +231,7 @@ image::03-travel-agency-expected-3-container-pods.png[]
 [source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh cristina
-----
-+
-[source,shell,subs=attributes,role=execute]
-----
 ./check-project-labels.sh {openshift_cluster_user_name}-prod-travel-control
-----
-+
-[source,shell,subs=attributes,role=execute]
-----
 ./check-project-labels.sh {openshift_cluster_user_name}-prod-travel-portal
 ----
 
@@ -252,10 +240,6 @@ image::03-travel-agency-expected-3-container-pods.png[]
 [source,shell,subs=attributes,role=execute]
 ----
 ./create-membership.sh {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_user_name}-production {openshift_cluster_user_name}-prod-travel-control
-----
-+
-[source,shell,subs=attributes,role=execute]
-----
 ./check-project-labels.sh {openshift_cluster_user_name}-prod-travel-control
 ----
 
@@ -264,10 +248,6 @@ image::03-travel-agency-expected-3-container-pods.png[]
 [source,shell,subs=attributes,role=execute]
 ----
 ./create-membership.sh {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_user_name}-production {openshift_cluster_user_name}-prod-travel-portal
-----
-+
-[source,shell,subs=attributes,role=execute]
-----
 ./check-project-labels.sh {openshift_cluster_user_name}-prod-travel-portal
 ----
 
@@ -309,12 +289,9 @@ Login as Mesh Operator (credentials `emma/emma`) and execute the following scrip
 [source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh emma
-----
-
-[source,shell,subs=attributes,role=execute]
-----
 ./create-https-ingress-gateway.sh prod-istio-system {openshift_cluster_ingress_domain} {openshift_cluster_user_name}
 ----
+
 
 NOTE: The configs come from link:https://github.com/redhat-gpte-devopsautomation/ossm-labs/blob/main/lab-3/create-https-ingress-gateway.sh[create-https-ingress-gateway.sh,window=_blank] script which you can inspect for details.
 
@@ -358,10 +335,7 @@ As a first step modify the Red Hat Openshift Console by adding the link:https://
 [source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh emma
-----
 
-[source,shell,subs=attributes,role=execute]
-----
 echo "apiVersion: kiali.io/v1alpha1
 kind: OSSMConsole
 metadata:
@@ -668,9 +642,7 @@ To apply the final production `SMCP` tuning, login as Mesh operator (credentials
 [source,shell,subs=attributes,role=execute]
 ----
 ./login-as.sh emma
-----
-[source,shell,subs=attributes,role=execute]
-----
+
 ./update-prod-smcp-3-final.sh {openshift_cluster_user_name}-prod-istio-system {openshift_cluster_user_name}-production {openshift_cluster_user_name}-jaeger-small-production
 ----
 
