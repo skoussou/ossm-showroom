@@ -39,14 +39,19 @@ In this task you are going to create:
 
 === Step 1 - Inject new Gateway
 
-As of ossm v3 ingress & egress gateway creation and management will be decoupled from the `ServiceMeshControlPlane`, aligning it with Istio. A team with the appropriate CR permissions can link:https://docs.openshift.com/container-platform/4.15/service_mesh/v2x/ossm-traffic-manage.html#ossm-automatic-gateway-injection_traffic-management[inject its own gateway,window=_blank] and manage security and protocols at the edge of the mesh.
+[NOTE]
+====
+As of version 3 of OpenShfit Service Mesh, ingress & egress gateway creation and management will be decoupled from the `ServiceMeshControlPlane`, aligning it with upstream Istio.
+===
 
-As the Travel Services Domain Owner (Tech Lead) you have been given permissions to perform the injection of a new gateway to expose services from the `{openshift_cluster_user_name}-prod-travel-agency` namespace. Login with credentials `farid/farid`.
+A team with the appropriate CR permissions can link:https://docs.openshift.com/container-platform/4.15/service_mesh/v2x/ossm-traffic-manage.html#ossm-automatic-gateway-injection_traffic-management[inject its own gateway,window=_blank] and manage security and protocols at the edge of the mesh.
+
+As the Travel Services Domain Owner (Tech Lead) you have been given permissions to create a new gateway to expose services from the `{openshift_cluster_user_name}-prod-travel-agency` namespace. Login with credentials `farid/farid`.
 
 
 [source,shell,subs=attributes,role=execute]
 ----
-cd lab-4
+cd ~/ossm-labs/lab-4
 ./login-as.sh farid
 ./inject-gto-ingress-gateway.sh prod-travel-agency {openshift_cluster_ingress_domain} user1
 ----
@@ -63,12 +68,12 @@ oc get pods -n {openshift_cluster_user_name}-prod-travel-agency | grep gto
 
 === Step 2 - Expose and secure via MTLS host on new Gateway
 
-In the next step you will expose the new `Gateway` and in order to do this the script provided will:
+In the next step you will expose the new `Gateway` and in order to do this the script provided will create:
 
-* create the CA and certs for the exposure of the TLS based `Gateway`,
-* an Openshift passthrough route,
-* the Istio `Gateway` configuration
-* create the client certificates based on the same CA for the curl client (in order to test MTLS):
+* The CA and certs for the exposure of the TLS based `Gateway`
+* An Openshift passthrough route
+* The Istio `Gateway` configuration
+* The client certificates based on the same CA for the curl client (in order to test MTLS)
 
 [source,shell,subs=attributes,role=execute]
 ----
@@ -112,7 +117,7 @@ NOTE: The configs came from link:https://github.com/redhat-gpte-devopsautomation
 
 === Step 3 - Configuration to allow Traffic flow via new Gateway
 
-As the Travel Services Domain Owner (Tech Lead) you can now enable Istio routing to your services via the new gateway (previously only possible via `{openshift_cluster_user_name}-prod-travel-portal` namespace). Login with credentials `farid/farid` and deploy the Istio Configs in your `{openshift_cluster_user_name}-prod-travel-agency` namespace to allow requests via the above defined Gateway to reach the required services cars, insurances, flights, hotels and travels.
+As the Travel Services Domain Owner (Tech Lead) you can now enable Istio routing to your services via the new gateway (previously only possible via `{openshift_cluster_user_name}-prod-travel-portal` namespace). Login with credentials `farid/farid` and deploy the Istio Configs in your `{openshift_cluster_user_name}-prod-travel-agency` namespace to allow requests via the above defined Gateway to reach the required services: cars, insurances, flights, hotels and travels.
 
 [source,shell,subs=attributes,role=execute]
 ----
@@ -149,9 +154,9 @@ The Lab Instructors have created an RH-SSO Identity Provider, a `Realm` for Serv
 The intended final authentication workflow (in addition to the mTLS handshake) for external requests with a `JWT` token is as follows:
 
 1. The external user authenticates to RHSSO and gets a JWT token
-2. The user performs a HTTP request to `link:https://gto-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain}/travels/Brussels[/travels,window=blank]` (or one of `cars`, `hotels`, `insurances`, `flights`) and passes along this request the JWT token
+2. The user performs a HTTP request to `link:https://gto-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain}/travels/Brussels[/travels,window=blank]` (or `cars`, `hotels`, `insurances`, `flights`) and passes along this request the JWT token
 3. The `istio-proxy` container of the Istio Ingress Gateway checks the validity of the JWT token based on the `RequestAuthentication` and `AuthorizationPolicy` objects
-4. If the JWT token is valid and the `AuthorizationPolicy` matches, the external user is allowed to access the `/PATH` - otherwise, an error message is returned to the user (code `403`, message `RBAC: access denied` or others).
+4. If the JWT token is valid and the `AuthorizationPolicy` matches, the external user is allowed to access the `/PATH` - otherwise, an error message is returned to the user (for example, code `403`, message `RBAC: access denied`).
 
 * Pros:
 ** This is the simplest approach (only 2 Custom Resources to be deployed)
