@@ -41,7 +41,7 @@ In this task you are going to create:
 
 [NOTE]
 ====
-As of version 3 of OpenShfit Service Mesh, ingress & egress gateway creation and management will be decoupled from the `ServiceMeshControlPlane`, aligning it with upstream Istio.
+As of version 3 of OpenShift Service Mesh, ingress & egress gateway creation and management will be decoupled from the `ServiceMeshControlPlane`, aligning it with upstream Istio.
 ===
 
 A team with the appropriate CR permissions can link:https://docs.openshift.com/container-platform/4.15/service_mesh/v2x/ossm-traffic-manage.html#ossm-automatic-gateway-injection_traffic-management[inject its own gateway,window=_blank] and manage security and protocols at the edge of the mesh.
@@ -156,7 +156,7 @@ The intended final authentication workflow (in addition to the mTLS handshake) f
 1. The external user authenticates to RHSSO and gets a JWT token
 2. The user performs a HTTP request to `link:https://gto-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain}/travels/Brussels[/travels,window=blank]` (or `cars`, `hotels`, `insurances`, `flights`) and passes along this request the JWT token
 3. The `istio-proxy` container of the Istio Ingress Gateway checks the validity of the JWT token based on the `RequestAuthentication` and `AuthorizationPolicy` objects
-4. If the JWT token is valid and the `AuthorizationPolicy` matches, the external user is allowed to access the `/PATH` - otherwise, an error message is returned to the user (for example, code `403`, message `RBAC: access denied`).
+4. If the JWT token is valid and the `AuthorizationPolicy` matches, the external user is allowed to access the `/PATH` - otherwise, an error message is returned to the user: code `403`, message `RBAC: access denied`.
 
 * Pros:
 ** This is the simplest approach (only 2 Custom Resources to be deployed)
