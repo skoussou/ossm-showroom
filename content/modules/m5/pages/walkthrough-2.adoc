@@ -274,12 +274,81 @@ echo $TOKEN
 ----
 cd ../lab-4
 ./login-as.sh emma
+export GATEWAY_URL=$(oc -n user1-prod-travel-agency get route gto-user1 -o jsonpath='{.spec.host}')
+echo $GATEWAY_URL
 ./call-via-mtls-and-jwt-travel-agency-api.sh {openshift_cluster_user_name}-prod-travel-agency gto-{openshift_cluster_user_name} $TOKEN
 ----
 
 Login to Kiali, go to menu `Graph`, select only namespace `{openshift_cluster_user_name}-prod-istio-system` and verify the traffic is successfully entering the mesh.
 
+=== Step 4: Use the `cert-manager` Certificates to secure `gto-{openshift_cluster_user_name}` ingress gateway
+
+In this final task of security hardening the `gto-{openshift_cluster_user_name}` ingress gateway, previously injected by `farid` Mesh Developer (Tech Lead), in the `{openshift_cluster_user_name}-prod-travel-agency` will be secured with certificates created and rotated by the `cert-manager` and issued by `issuer: O=travelagency.com; CN=root-ca.travelagency.com`.
+
+* Login as `farid` and create a Certificate with _CommonName_ `gto-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain}` with the `root-ca` corporate `ClusterIssuer`:
++
+[source,shell,subs=attributes,role=execute]
+----
+cd ~/ossm-labs/lab-5
+./login-as.sh farid
+
+echo "apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: gto-{openshift_cluster_user_name}-ingressgateway-cert
+  namespace: {openshift_cluster_user_name}-prod-travel-agency
+spec:
+  # Secret names are always required.
+  secretName: gto-{openshift_cluster_user_name}-ingressgateway
+  commonName: gto-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain}
+  usages:
+    - server auth
+    - client auth  
+  issuerRef:
+    name: root-ca
+    # We can reference ClusterIssuers by changing the kind here.
+    # The default value is Issuer (i.e. a locally namespaced Issuer)
+    kind: ClusterIssuer
+    # This is optional since cert-manager will default to this value however
+    # if you are using an external issuer, change this to that issuer group.
+    group: cert-manager.io"|oc apply -f -
+
+----
+
+* Verify the certificate has been create in the namespace
++
+[source,shell,subs=attributes,role=execute]
+----
+oc get secret gto-user1-ingressgateway -n user1-prod-travel-agency -o jsonpath={.data} |jq
+----
+
+* Login to the link:https://kiali-{openshift_cluster_user_name}-prod-istio-system.{openshift_cluster_ingress_domain}/console/namespaces/{openshift_cluster_user_name}-prod-travel-agency/istio/gateways/travel-api-gateway[Kiali Dashboard,window=_blank] with the user `farid/farid` and modify the `travel-api-gateway` resource so that the `tls` section looks as follows and the gateway uses the `cert-manager` generated `Certificate`:
++
+[source,shell,subs=attributes]
+----
+      tls:
+        mode: SIMPLE
+        credentialName: gto-{openshift_cluster_user_name}-ingressgateway
+----
+
+* Finally, verify `gto-{openshift_cluster_user_name}.{openshift_cluster_ingress_domain}` is secured with a `Certificate` issued by `issuer: O=travelagency.com; CN=root-ca.travelagency.com`. 
+
+** Retrieve a token (in case it has already expired)
++
+[source,shell,subs=attributes,role=execute]
+----
+TOKEN=$(curl -Lk --data "username=gtouser&password=gtouser&grant_type=password&client_id=istio-{openshift_cluster_user_name}&client_secret=$SSO_CLIENT_SECRET" https://keycloak-rhsso.{openshift_cluster_ingress_domain}/auth/realms/servicemesh-lab/protocol/openid-connect/token | jq .access_token)
+----
+
+** Call the `cars` API
++
+[source,shell,subs=attributes,role=execute]
+----
+export GATEWAY_URL=$(oc -n {openshift_cluster_user_name}-prod-travel-agency get route gto-{openshift_cluster_user_name} -o jsonpath='{.spec.host}')
+echo $GATEWAY_URL
+
+curl -v -k -H "Authorization: Bearer $TOKEN" https://$GATEWAY_URL/cars/Tallinn |jq
+----
+
+
 Congratulations!!! You have successfully helped Travel Agency orgnization to use -self-signed- CA to secure mesh communications.
-
-
-=== Step 4: Use the `istio-ca` to also secure external communciations (TODO)
