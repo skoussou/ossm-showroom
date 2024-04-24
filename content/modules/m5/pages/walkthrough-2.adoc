@@ -211,13 +211,6 @@ oc delete secret istio-ca-secret -n {openshift_cluster_user_name}-prod-istio-sys
 === Step 3: Verify the _controlplane_ and _dataplane_ certificates have `issuer=O = travelagency.com`
 
 * Restart _controlplane_ and _dataplane_ resources to expedite the new certificate utilization
-** Restart the _controlplane_ pods (The Operator will automatically recreate the pods after they have been deleted).
-+
-[source,shell,subs=attributes,role=execute]
-----
-oc -n {openshift_cluster_user_name}-prod-istio-system delete pods -l "app in (istiod,istio-ingressgateway, istio-egressgateway)"
-oc -n {openshift_cluster_user_name}-prod-istio-system get pods -w
-----
 ** Restart the _dataplane_ pods to expedite the sidecar proxies picking up the certificates changes.
 +
 [source,shell,subs=attributes,role=execute]
