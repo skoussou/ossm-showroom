@@ -261,7 +261,7 @@ echo $TOKEN
 ./call-via-mtls-and-jwt-travel-agency-api.sh {openshift_cluster_user_name}-prod-travel-agency gto-{openshift_cluster_user_name} $TOKEN
 ----
 
-Login to Kiali, go to menu `Graph`, select only namespace `{openshift_cluster_user_name}-prod-istio-system` and verify the traffic is successfully entering the mesh.
+Login to Kiali, go to menu `Graph`, select only namespace `{openshift_cluster_user_name}-prod-istio-system` and verify the traffic is successfully entering the mesh via tthe `gto` gateway.
 
 [link=_images/04-gto-external-ingressgateway-jwt-2.png,window=_blank]
 image::04-gto-external-ingressgateway-jwt-2.png[300,700]
