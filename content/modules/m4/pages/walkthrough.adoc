@@ -42,7 +42,7 @@ In this task you are going to create:
 [NOTE]
 ====
 As of version 3 of OpenShift Service Mesh, ingress & egress gateway creation and management will be decoupled from the `ServiceMeshControlPlane`, aligning it with upstream Istio.
-===
+====
 
 A team with the appropriate CR permissions can link:https://docs.openshift.com/container-platform/4.15/service_mesh/v2x/ossm-traffic-manage.html#ossm-automatic-gateway-injection_traffic-management[inject its own gateway,window=_blank] and manage security and protocols at the edge of the mesh.
 
