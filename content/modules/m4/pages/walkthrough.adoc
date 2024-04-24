@@ -46,7 +46,7 @@ As of version 3 of OpenShift Service Mesh, ingress & egress gateway creation and
 
 A team with the appropriate CR permissions can link:https://docs.openshift.com/container-platform/4.15/service_mesh/v2x/ossm-traffic-manage.html#ossm-automatic-gateway-injection_traffic-management[inject its own gateway,window=_blank] and manage security and protocols at the edge of the mesh.
 
-As the Travel Services Domain Owner (Tech Lead) you have been given permissions to create a new gateway to expose services from the `{openshift_cluster_user_name}-prod-travel-agency` namespace. Login with credentials `farid/farid`.
+As the Travel Services Domain Owner (Tech Lead) you have been given permissions to create a new gateway to expose services from the `{openshift_cluster_user_name}-prod-travel-agency` namespace. Login with credentials `farid/farid` and inject the new `gto` gateway in the travel services namespace.
 
 
 [source,shell,subs=attributes,role=execute]
